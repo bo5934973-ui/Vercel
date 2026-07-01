@@ -1,0 +1,20 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#F5F5F7"/>
+  <rect x="112" y="120" width="1376" height="960" rx="50" fill="#FFFFFF"/>
+  <text x="190" y="368" fill="#111111" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="160" font-weight="700" letter-spacing="-6">JQ</text>
+  <rect x="196" y="464" width="370" height="10" rx="5" fill="#111111"/>
+  <rect x="196" y="510" width="520" height="10" rx="5" fill="#86868B" opacity=".35"/>
+  <rect x="906" y="252" width="340" height="340" rx="34" fill="#050505"/>
+  <circle cx="1076" cy="422" r="92" fill="url(#mark)"/>
+  <rect x="906" y="652" width="340" height="172" rx="28" fill="#F5F5F7" stroke="#111" stroke-opacity=".08"/>
+  <rect x="966" y="722" width="220" height="16" rx="8" fill="#111111" opacity=".72"/>
+  <text x="190" y="1000" fill="#111111" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="44" font-weight="650">品牌识别探索</text>
+  <text x="190" y="1056" fill="#86868B" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="22">字体设计 / 视觉识别 / 品牌系统</text>
+  <defs>
+    <linearGradient id="mark" x1="984" y1="330" x2="1168" y2="514" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FAFF"/>
+      <stop offset=".52" stop-color="#9AA7B8"/>
+      <stop offset="1" stop-color="#2E333B"/>
+    </linearGradient>
+  </defs>
+</svg>

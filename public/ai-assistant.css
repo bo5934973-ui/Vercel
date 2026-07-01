@@ -1,0 +1,300 @@
+#jason-ai-assistant {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  z-index: 99999;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+}
+
+#jason-ai-assistant * {
+  box-sizing: border-box;
+}
+
+.jason-ai-glass {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58)),
+    rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  box-shadow:
+    0 24px 70px rgba(20, 20, 25, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(28px) saturate(1.55);
+  backdrop-filter: blur(28px) saturate(1.55);
+}
+
+.jason-ai-launcher {
+  align-items: center;
+  border: 0;
+  border-radius: 999px;
+  color: #161616;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  height: 58px;
+  padding: 8px 18px 8px 9px;
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.jason-ai-launcher:hover {
+  transform: translateY(-2px);
+}
+
+.jason-ai-icon {
+  align-items: center;
+  background: #161616;
+  border-radius: 999px;
+  color: #ffffff;
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.jason-ai-icon svg {
+  height: 23px;
+  width: 23px;
+}
+
+.jason-ai-icon path,
+.jason-ai-icon circle {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.jason-ai-icon.is-open::before {
+  content: "×";
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.jason-ai-icon.is-open svg {
+  display: none;
+}
+
+.jason-ai-label {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.jason-ai-panel {
+  border-radius: 26px;
+  bottom: 72px;
+  display: none;
+  flex-direction: column;
+  height: min(74svh, 620px);
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  width: min(calc(100vw - 32px), 390px);
+}
+
+@supports (height: 100dvh) {
+  .jason-ai-panel {
+    height: min(74dvh, 620px);
+  }
+}
+
+.jason-ai-panel.is-open {
+  display: flex;
+}
+
+.jason-ai-head {
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.jason-ai-title {
+  color: #161616;
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.jason-ai-subtitle {
+  color: #6e6e73;
+  font-size: 12px;
+  margin: 3px 0 0;
+}
+
+.jason-ai-close {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  border: 0;
+  border-radius: 999px;
+  color: #161616;
+  cursor: pointer;
+  display: flex;
+  font-size: 18px;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.jason-ai-messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.jason-ai-message {
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 86%;
+  padding: 11px 14px;
+  white-space: pre-wrap;
+}
+
+.jason-ai-message.assistant {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.64);
+  color: #161616;
+}
+
+.jason-ai-message.user {
+  align-self: flex-end;
+  background: #161616;
+  color: #ffffff;
+}
+
+.jason-ai-error {
+  background: rgba(254, 242, 242, 0.92);
+  border: 1px solid #fecaca;
+  border-radius: 18px;
+  color: #b91c1c;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 11px 14px;
+}
+
+.jason-ai-composer {
+  border-top: 1px solid rgba(255, 255, 255, 0.55);
+  padding: 12px;
+}
+
+.jason-ai-prompts {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.jason-ai-chip {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  color: #161616;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 11px;
+}
+
+.jason-ai-form {
+  align-items: flex-end;
+  display: flex;
+  gap: 9px;
+  min-width: 0;
+}
+
+.jason-ai-input {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 18px;
+  color: #161616;
+  flex: 1;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.45;
+  max-height: 110px;
+  min-height: 46px;
+  min-width: 0;
+  outline: none;
+  padding: 12px 14px;
+  resize: none;
+}
+
+.jason-ai-send {
+  align-items: center;
+  background: #161616;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 46px;
+  font-size: 18px;
+  height: 46px;
+  justify-content: center;
+  width: 46px;
+}
+
+.jason-ai-send:disabled,
+.jason-ai-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+@media (max-width: 640px) {
+  #jason-ai-assistant {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .jason-ai-panel {
+    border-radius: 24px;
+    bottom: calc(70px + env(safe-area-inset-bottom));
+    left: 12px;
+    max-height: calc(100svh - 94px - env(safe-area-inset-bottom));
+    position: fixed;
+    right: 12px;
+    width: auto;
+  }
+
+  @supports (height: 100dvh) {
+    .jason-ai-panel {
+      max-height: calc(100dvh - 94px - env(safe-area-inset-bottom));
+    }
+  }
+
+  .jason-ai-messages {
+    padding: 14px;
+  }
+
+  .jason-ai-composer {
+    padding: 10px;
+  }
+
+  .jason-ai-label {
+    display: inline-flex;
+    font-size: 13px;
+  }
+
+  .jason-ai-launcher {
+    height: 54px;
+    padding: 7px 14px 7px 8px;
+  }
+
+  .jason-ai-icon {
+    height: 39px;
+    width: 39px;
+  }
+
+  .jason-ai-input {
+    min-height: 48px;
+  }
+}

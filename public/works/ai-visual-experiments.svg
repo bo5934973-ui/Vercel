@@ -1,0 +1,22 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#050505"/>
+  <circle cx="802" cy="502" r="378" fill="url(#aura)" opacity=".9"/>
+  <path d="M320 682c168-210 316-272 492-236 180 36 282 162 468 36" stroke="white" stroke-opacity=".58" stroke-width="26" stroke-linecap="round"/>
+  <path d="M392 764c172-126 324-162 480-112 156 48 252 116 392 68" stroke="#BFD4F8" stroke-opacity=".26" stroke-width="52" stroke-linecap="round"/>
+  <rect x="580" y="312" width="440" height="440" rx="88" fill="white" fill-opacity=".09" stroke="white" stroke-opacity=".18"/>
+  <circle cx="800" cy="532" r="118" fill="url(#core)"/>
+  <text x="116" y="1012" fill="white" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="48" font-weight="700">AI 视觉实验</text>
+  <text x="116" y="1072" fill="white" fill-opacity=".45" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="22">AI 指导 / 情绪板 / 视觉概念</text>
+  <defs>
+    <radialGradient id="aura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(802 502) rotate(90) scale(378)">
+      <stop stop-color="#F8FBFF" stop-opacity=".65"/>
+      <stop offset=".36" stop-color="#AFC8EE" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#050505" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="core" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 532) rotate(90) scale(118)">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset=".48" stop-color="#B5C9EA"/>
+      <stop offset="1" stop-color="#101217"/>
+    </radialGradient>
+  </defs>
+</svg>

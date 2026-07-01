@@ -1,0 +1,25 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#050505"/>
+  <circle cx="800" cy="520" r="430" fill="url(#glow)" opacity=".86"/>
+  <ellipse cx="800" cy="600" rx="310" ry="312" fill="url(#ring)" stroke="rgba(255,255,255,.46)" stroke-width="3"/>
+  <ellipse cx="800" cy="600" rx="214" ry="216" fill="#050505" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+  <path d="M581 382c110-104 318-112 452 18" stroke="white" stroke-opacity=".74" stroke-width="18" stroke-linecap="round"/>
+  <path d="M493 810c140 156 438 164 610-3" stroke="#C7D9F7" stroke-opacity=".26" stroke-width="28" stroke-linecap="round"/>
+  <rect x="104" y="92" width="1392" height="1016" rx="48" stroke="white" stroke-opacity=".08"/>
+  <text x="112" y="1020" fill="white" fill-opacity=".72" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="44" font-weight="600">DalingRing 智能戒指视觉</text>
+  <text x="112" y="1076" fill="white" fill-opacity=".38" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="22">智能硬件 / 产品视觉 / 产品渲染</text>
+  <defs>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 520) rotate(90) scale(430)">
+      <stop stop-color="#F8FBFF" stop-opacity=".52"/>
+      <stop offset=".38" stop-color="#B8CCEA" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#050505" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="494" y1="370" x2="1110" y2="884" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7F7F8"/>
+      <stop offset=".24" stop-color="#9FA6B1"/>
+      <stop offset=".48" stop-color="#111318"/>
+      <stop offset=".72" stop-color="#E7EFFC"/>
+      <stop offset="1" stop-color="#656B75"/>
+    </linearGradient>
+  </defs>
+</svg>

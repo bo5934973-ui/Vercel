@@ -1,0 +1,24 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#F5F5F7"/>
+  <rect x="108" y="120" width="1384" height="960" rx="42" fill="#050505"/>
+  <circle cx="1142" cy="452" r="272" fill="url(#cool)" opacity=".9"/>
+  <rect x="214" y="250" width="550" height="404" rx="34" fill="white" fill-opacity=".08" stroke="white" stroke-opacity=".13"/>
+  <text x="256" y="370" fill="white" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="56" font-weight="700">新品视觉</text>
+  <text x="256" y="438" fill="white" fill-opacity=".58" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="24">电商横幅设计</text>
+  <rect x="256" y="534" width="210" height="58" rx="29" fill="white"/>
+  <text x="302" y="571" fill="#111111" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="18" font-weight="650">立即查看</text>
+  <rect x="874" y="356" width="430" height="430" rx="76" fill="url(#product)" stroke="white" stroke-opacity=".3" stroke-width="3"/>
+  <text x="142" y="1006" fill="white" fill-opacity=".76" font-family="Noto Sans SC, Microsoft YaHei, Arial" font-size="44" font-weight="650">电商横幅设计</text>
+  <defs>
+    <radialGradient id="cool" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1142 452) rotate(90) scale(272)">
+      <stop stop-color="#F7FBFF"/>
+      <stop offset=".4" stop-color="#B9CFF4"/>
+      <stop offset="1" stop-color="#050505" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="product" x1="874" y1="356" x2="1304" y2="786" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset=".42" stop-color="#AAB2BE"/>
+      <stop offset="1" stop-color="#22262E"/>
+    </linearGradient>
+  </defs>
+</svg>

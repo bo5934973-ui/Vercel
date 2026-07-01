@@ -1,0 +1,147 @@
+{
+  "site": {
+    "name": "Jason Qiu",
+    "role": "视觉设计师 / 品牌与产品设计",
+    "footerLeft": "Jason Qiu 作品集",
+    "footerRight": "视觉设计师 / 品牌与产品设计"
+  },
+  "hero": {
+    "eyebrow": "视觉设计师 / 品牌与产品设计",
+    "title": "Jason Qiu",
+    "description": "专注于品牌视觉、电商设计、产品渲染与 AI 视觉创作。",
+    "primaryButton": "查看作品",
+    "secondaryButton": "联系我",
+    "visualTitle": "高端产品视觉",
+    "visualSubtitle": "品牌 / 产品 / 传播活动"
+  },
+  "worksSection": {
+    "eyebrow": "精选作品",
+    "title": "为品牌、产品与商业传播打造高质感视觉系统。"
+  },
+  "about": {
+    "eyebrow": "关于我",
+    "title": "关于我",
+    "description": "我是一名视觉设计师，关注品牌表达、产品质感与商业视觉转化。擅长将复杂的产品卖点转化为清晰、高级、具有购买欲望的视觉内容。",
+    "skills": [
+      "品牌视觉设计",
+      "电商视觉设计",
+      "产品渲染",
+      "海报设计",
+      "AI 视觉指导",
+      "Figma / Photoshop / Illustrator"
+    ]
+  },
+  "contact": {
+    "title": "一起做出更漂亮的视觉作品。",
+    "description": "如果你对我的作品感兴趣，欢迎联系我。",
+    "email": "bo.5934973@gmail.com",
+    "buttonText": "发送邮件"
+  },
+  "caseStudy": {
+    "backText": "返回作品",
+    "infoBlocks": [
+      {
+        "title": "项目背景",
+        "body": "面向商业展示与合作沟通，建立清晰的视觉叙事，让产品或品牌在第一眼具备识别度和质感。"
+      },
+      {
+        "title": "设计目标",
+        "body": "用克制的构图、细腻光影与明确层级，将复杂卖点转化为可感知、可传播、可购买的视觉内容。"
+      },
+      {
+        "title": "视觉方向",
+        "body": "以黑白灰基底、冷白光、高级材质、留白与大图叙事为核心，保持视觉中心纯净而有冲击力。"
+      }
+    ],
+    "summaryEyebrow": "项目总结",
+    "summaryTitle": "面向高端传播的聚焦型视觉系统。",
+    "summaryBody": "该模板适合展示产品渲染、品牌视觉、电商海报与 AI 视觉探索。文字保持短句，视觉作品占据主要空间，让浏览节奏更接近高端产品页。",
+    "backButton": "返回作品列表"
+  },
+  "works": [
+    {
+      "title": "DalingRing 智能戒指视觉",
+      "category": "智能戒指视觉设计",
+      "year": "2026",
+      "description": "为智能穿戴硬件打造的高端视觉系统，强调材质细节、柔和光影与产品购买欲。",
+      "coverImage": "/works/dalingring-smart-ring.png",
+      "images": [
+        "/works/dalingring-smart-ring.png",
+        "/works/product-rendering-collection.png",
+        "/works/ai-visual-experiments.png"
+      ],
+      "tags": ["智能硬件", "产品视觉", "产品渲染"],
+      "slug": "dalingring-smart-ring-visual"
+    },
+    {
+      "title": "产品渲染作品合集",
+      "category": "产品渲染",
+      "year": "2025",
+      "description": "一组注重反射控制、几何秩序与商业展示逻辑的精致产品渲染作品。",
+      "coverImage": "/works/product-rendering-collection.png",
+      "images": [
+        "/works/product-rendering-collection.png",
+        "/works/ecommerce-banner-design.png",
+        "/works/dalingring-smart-ring.png"
+      ],
+      "tags": ["三维渲染", "材质与工艺", "商业视觉"],
+      "slug": "product-rendering-collection"
+    },
+    {
+      "title": "世界杯活动海报",
+      "category": "海报设计",
+      "year": "2024",
+      "description": "围绕冲击力、节奏感与品牌记忆点打造的动态活动海报方向。",
+      "coverImage": "/works/world-cup-campaign-poster.png",
+      "images": [
+        "/works/world-cup-campaign-poster.png",
+        "/works/brand-identity-exploration.png",
+        "/works/ecommerce-banner-design.png"
+      ],
+      "tags": ["活动传播", "海报", "运动视觉"],
+      "slug": "world-cup-campaign-poster"
+    },
+    {
+      "title": "电商横幅设计",
+      "category": "电商横幅",
+      "year": "2025",
+      "description": "高转化导向的横幅构图，将产品价值转化为优雅直接的购买动机。",
+      "coverImage": "/works/ecommerce-banner-design.png",
+      "images": [
+        "/works/ecommerce-banner-design.png",
+        "/works/product-rendering-collection.png",
+        "/works/ai-visual-experiments.png"
+      ],
+      "tags": ["电商", "活动视觉", "转化设计"],
+      "slug": "ecommerce-banner-design"
+    },
+    {
+      "title": "品牌识别探索",
+      "category": "品牌识别",
+      "year": "2025",
+      "description": "以字体、间距和触感化视觉系统为核心的克制型品牌识别探索。",
+      "coverImage": "/works/brand-identity-exploration.png",
+      "images": [
+        "/works/brand-identity-exploration.png",
+        "/works/world-cup-campaign-poster.png",
+        "/works/dalingring-smart-ring.png"
+      ],
+      "tags": ["品牌系统", "字体设计", "视觉识别"],
+      "slug": "brand-identity-exploration"
+    },
+    {
+      "title": "AI 视觉实验",
+      "category": "AI 视觉探索",
+      "year": "2026",
+      "description": "围绕情绪、材质、光影与未来产品叙事进行的 AI 视觉指导实验。",
+      "coverImage": "/works/ai-visual-experiments.png",
+      "images": [
+        "/works/ai-visual-experiments.png",
+        "/works/brand-identity-exploration.png",
+        "/works/product-rendering-collection.png"
+      ],
+      "tags": ["AI 指导", "情绪板", "视觉概念"],
+      "slug": "ai-visual-experiments"
+    }
+  ]
+}
