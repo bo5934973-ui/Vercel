@@ -103,15 +103,6 @@ export function Navigation() {
               <span className="relative z-10 whitespace-nowrap">{item.label}</span>
             </motion.a>
           ))}
-          <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} className="hidden sm:block">
-            <Link
-              className="block whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition"
-              style={{ color: "#1d1d1f" }}
-              href="/admin/"
-            >
-            管理
-            </Link>
-          </motion.div>
         </div>
       </nav>
     </motion.header>
