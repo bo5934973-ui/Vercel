@@ -6,17 +6,27 @@ import { useLiveContent } from "@/components/LiveContentProvider";
 export function Hero() {
   const { scrollY } = useScroll();
   const reducedMotion = useReducedMotion();
-  const visualY = useTransform(scrollY, [0, 900], [0, reducedMotion ? 0 : 84]);
+  const visualY = useTransform(scrollY, [0, 900], [0, reducedMotion ? 0 : 72]);
   const fade = useTransform(scrollY, [0, 720], [1, 0.72]);
   const { content } = useLiveContent();
   const { hero, works } = content;
   const heroWorks = works.slice(0, 3);
+  const buttonBase =
+    "inline-flex h-14 min-w-[172px] items-center justify-center rounded-full px-8 text-[20px] font-medium leading-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black/20 focus:ring-offset-2 focus:ring-offset-[#f5f5f7]";
 
   return (
     <section className="relative min-h-[100dvh] overflow-hidden bg-[#f5f5f7] px-5 pb-20 pt-24 text-[#1d1d1f] md:px-10 md:pb-28 md:pt-28 lg:pb-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0))]" />
       <motion.div style={{ opacity: fade }} className="relative z-10 mx-auto flex max-w-[1440px] flex-col items-center text-center">
-        <div className="max-w-5xl">
+        <div className="max-w-4xl">
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto mb-5 max-w-3xl text-sm font-medium uppercase tracking-[0.16em] text-[#6e6e73]"
+          >
+            {hero.eyebrow}
+          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
@@ -29,26 +39,20 @@ export function Hero() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.78, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mt-4 max-w-3xl text-2xl font-medium leading-9 text-[#1d1d1f] md:mt-5 md:text-4xl md:leading-[1.18]"
+            className="mx-auto mt-4 max-w-2xl text-xl font-medium leading-8 text-[#1d1d1f] md:mt-5 md:text-3xl md:leading-[1.22]"
           >
             {hero.description}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-7 flex flex-wrap justify-center gap-4"
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-5"
           >
-            <a
-              href="#works"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-[#0071e3] px-7 text-base font-medium text-white transition hover:bg-[#0077ed] active:scale-[0.98]"
-            >
+            <a href="#works" className={`${buttonBase} bg-black text-white hover:bg-[#1d1d1f]`}>
               {hero.primaryButton}
             </a>
-            <a
-              href="#contact"
-              className="inline-flex h-12 items-center justify-center rounded-full border border-[#0071e3] px-7 text-base font-medium text-[#0071e3] transition hover:bg-[#0071e3] hover:text-white active:scale-[0.98]"
-            >
+            <a href="#contact" className={`${buttonBase} border border-black bg-transparent text-black hover:bg-black hover:text-white`}>
               {hero.secondaryButton}
             </a>
           </motion.div>

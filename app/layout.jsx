@@ -4,9 +4,9 @@ import { LiveContentProvider } from "@/components/LiveContentProvider";
 import { siteContent } from "@/data/siteContent";
 
 export const metadata = {
-  title: "Jason Qiu - 视觉设计师作品集",
+  title: "Jason Qiu - 产品 / UI / 视觉设计师",
   description:
-    "Jason Qiu 的个人作品集，展示品牌视觉、电商设计、产品渲染与 AI 视觉创作。",
+    "Jason Qiu 的个人作品集，专注智能硬件、AI 产品、产品设计、UI / UX、视觉系统、3D / CGI 与产品发布沟通。",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
@@ -14,16 +14,17 @@ export const metadata = {
   },
   keywords: [
     "Jason Qiu",
+    "产品设计师",
     "视觉设计师",
-    "品牌视觉设计",
-    "电商视觉设计",
-    "产品渲染",
-    "AI 视觉创作"
+    "UI 设计师",
+    "智能硬件设计",
+    "AI 产品设计",
+    "3D CGI 产品视觉"
   ],
   openGraph: {
-    title: "Jason Qiu - 视觉设计师作品集",
+    title: "Jason Qiu - 产品 / UI / 视觉设计师",
     description:
-      "展示品牌视觉、电商设计、产品渲染与 AI 视觉创作的个人作品集。",
+      "面向智能硬件与 AI 产品方向的产品设计、视觉系统与商业发布作品集。",
     type: "website"
   }
 };

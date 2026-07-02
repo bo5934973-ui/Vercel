@@ -1,97 +1,195 @@
 {
   "site": {
     "name": "Jason Qiu",
-    "role": "视觉设计师 / 品牌与产品设计",
+    "role": "求职方向：智能硬件与 AI 产品方向的产品设计师 / 视觉设计师",
+    "resumeUrl": "/Jason-Qiu-Resume.md",
     "footerLeft": "Jason Qiu 作品集",
-    "footerRight": "视觉设计师 / 品牌与产品设计"
+    "footerRight": "产品 / UI / 视觉设计师"
   },
   "hero": {
-    "eyebrow": "视觉设计师 / 品牌与产品设计",
+    "eyebrow": "产品 / UI / 视觉设计师",
     "title": "Jason Qiu",
-    "description": "专注于品牌视觉、电商设计、产品渲染与 AI 视觉创作。",
+    "description": "专注智能硬件与 AI 产品，建立清晰的界面体验、视觉系统与发布视觉资产。",
+    "capabilities": [
+      "产品设计",
+      "视觉系统",
+      "3D / CGI",
+      "UI / UX"
+    ],
     "primaryButton": "查看作品",
     "secondaryButton": "联系我",
-    "visualTitle": "高端产品视觉",
-    "visualSubtitle": "品牌 / 产品 / 传播活动"
+    "resumeButton": "电话联系",
+    "resumeUrl": "/Jason-Qiu-Resume.md",
+    "seeking": "求职方向：智能硬件、AI 产品与产品驱动型品牌系统方向的产品设计师 / 视觉设计师。",
+    "visualTitle": "高端产品视觉系统",
+    "visualSubtitle": "智能硬件 / AI 产品 / 商业发布"
   },
   "worksSection": {
-    "eyebrow": "精选作品",
-    "title": "为品牌、产品与商业传播打造高质感视觉系统。"
+    "eyebrow": "精选项目",
+    "title": "围绕产品价值与视觉系统组织的案例作品。"
   },
   "about": {
     "eyebrow": "关于我",
-    "title": "关于我",
-    "description": "我是一名视觉设计师，关注品牌表达、产品质感与商业视觉转化。擅长将复杂的产品卖点转化为清晰、高级、具有购买欲望的视觉内容。",
+    "title": "为智能硬件与 AI 产品建立清晰、有质感的设计表达。",
+    "description": "我关注产品设计、UI 方向、视觉系统与 3D 产品叙事。我的工作重点是把复杂功能转化为招聘方、用户与商业团队都能快速理解的产品价值，并形成可用于产品发布、电商页面、品牌沟通与求职展示的完整视觉输出。",
     "skills": [
-      "品牌视觉设计",
-      "电商视觉设计",
-      "产品渲染",
-      "海报设计",
+      "产品设计",
+      "UI / UX",
+      "视觉系统",
+      "3D / CGI",
       "AI 视觉指导",
       "Figma / Photoshop / Illustrator"
+    ],
+    "skillGroups": [
+      {
+        "title": "产品",
+        "items": [
+          "产品定位",
+          "UI / UX 结构",
+          "功能卖点表达",
+          "发布叙事"
+        ]
+      },
+      {
+        "title": "视觉",
+        "items": [
+          "视觉系统",
+          "品牌识别",
+          "3D / CGI 渲染",
+          "电商视觉资产"
+        ]
+      },
+      {
+        "title": "工具",
+        "items": [
+          "Figma",
+          "Photoshop",
+          "Illustrator",
+          "AI 图像工作流"
+        ]
+      }
     ]
   },
   "contact": {
-    "title": "一起做出更漂亮的视觉作品。",
-    "description": "如果你对我的作品感兴趣，欢迎联系我。",
+    "title": "欢迎沟通设计岗位机会。",
+    "description": "适合智能硬件、AI 产品、电商发布与品牌视觉系统方向。",
     "email": "bo.5934973@gmail.com",
+    "phone": "17607939069",
     "buttonText": "发送邮件"
   },
   "caseStudy": {
     "backText": "返回作品",
     "infoBlocks": [
       {
-        "title": "项目背景",
-        "body": "面向商业展示与合作沟通，建立清晰的视觉叙事，让产品或品牌在第一眼具备识别度和质感。"
+        "title": "问题",
+        "body": "项目需要更清晰地传达产品价值，减少单纯氛围图带来的信息模糊，并让视觉成果能服务于商业沟通。"
       },
       {
-        "title": "设计目标",
-        "body": "用克制的构图、细腻光影与明确层级，将复杂卖点转化为可感知、可传播、可购买的视觉内容。"
+        "title": "角色",
+        "body": "我负责梳理视觉方向、组织关键资产结构，并把产品或品牌信息转化为统一、可复用的展示系统。"
       },
       {
-        "title": "视觉方向",
-        "body": "以黑白灰基底、冷白光、高级材质、留白与大图叙事为核心，保持视觉中心纯净而有冲击力。"
+        "title": "输出",
+        "body": "最终输出包含发布视觉、界面或电商构图，以及后续沟通中可延展使用的视觉语言。"
       }
     ],
-    "summaryEyebrow": "项目总结",
-    "summaryTitle": "面向高端传播的聚焦型视觉系统。",
-    "summaryBody": "该模板适合展示产品渲染、品牌视觉、电商海报与 AI 视觉探索。文字保持短句，视觉作品占据主要空间，让浏览节奏更接近高端产品页。",
-    "backButton": "返回作品列表"
+    "summaryEyebrow": "项目价值",
+    "summaryTitle": "从视觉质感升级为产品沟通能力。",
+    "summaryBody": "每个项目都围绕问题、我的角色、交付内容与实际价值展开，让招聘方能快速判断我如何理解产品、推进设计并形成可使用的商业输出。",
+    "backButton": "查看更多作品",
+    "contactButton": "沟通岗位机会"
   },
   "works": [
     {
-      "title": "DalingRing 智能戒指视觉",
-      "category": "智能戒指视觉设计",
+      "title": "DalingRing 智能戒指视觉系统",
+      "category": "智能硬件 / 产品视觉",
       "year": "2026",
-      "description": "为智能穿戴硬件打造的高端视觉系统，强调材质细节、柔和光影与产品购买欲。",
+      "description": "为智能穿戴产品建立高端视觉方向，连接硬件材质与发布沟通。",
+      "problem": "产品需要在用户尚未实际接触硬件前，建立可信、精致且容易理解的第一印象。",
+      "role": "视觉方向、产品叙事、3D / CGI 美术指导与发布资产结构设计。",
+      "output": "主视觉渲染、产品细节图、电商构图与统一视觉系统。",
+      "result": "形成可用于产品页、发布资料与品牌沟通的高质感产品叙事。",
+      "impact": "该项目把小体积硬件转化为清晰的产品故事，让材质、健康科技定位与电商表达能在几秒内被理解。",
+      "caseStudy": [
+        {
+          "title": "问题",
+          "body": "智能戒指体积很小，但承载了传感、舒适度、材质与生活方式等多层价值。视觉系统需要在不堆叠技术信息的前提下，把这些价值讲清楚。"
+        },
+        {
+          "title": "角色",
+          "body": "我定义视觉方向，选择产品角度，控制 CGI 氛围，并围绕产品卖点组织关键画面，而不是只做装饰性氛围图。"
+        },
+        {
+          "title": "输出",
+          "body": "输出包含产品主视觉、材质细节图、电商横幅与用于产品发布沟通的辅助视觉。"
+        }
+      ],
       "coverImage": "/works/dalingring-smart-ring.png",
       "images": [
         "/works/dalingring-smart-ring.png",
         "/works/product-rendering-collection.png",
         "/works/ai-visual-experiments.png"
       ],
-      "tags": ["智能硬件", "产品视觉", "产品渲染"],
+      "tags": ["智能硬件", "产品视觉", "3D / CGI"],
       "slug": "dalingring-smart-ring-visual"
     },
     {
       "title": "产品渲染作品合集",
-      "category": "产品渲染",
+      "category": "3D / CGI 产品设计",
       "year": "2025",
-      "description": "一组注重反射控制、几何秩序与商业展示逻辑的精致产品渲染作品。",
+      "description": "关注材质、几何秩序与商业展示逻辑的产品渲染探索。",
+      "problem": "产品概念如果缺少材质控制、尺度线索与展示层级，很容易削弱商业价值感。",
+      "role": "3D 视觉方向、构图、灯光、材质细化与产品沟通。",
+      "output": "模块化产品渲染图与可用于产品页、提案或发布资料的布局方向。",
+      "result": "提升产品概念的高端感，并让视觉资产更容易在不同发布渠道中复用。",
+      "impact": "该合集展示了一套可重复使用的产品渲染方法，适用于电商、产品发布与早期概念验证。",
+      "caseStudy": [
+        {
+          "title": "问题",
+          "body": "项目需要让产品形体更真实、更有价值感，同时保持画面足够干净，便于商业场景复用。"
+        },
+        {
+          "title": "角色",
+          "body": "我控制灯光、反射、构图节奏与材质对比，建立统一的产品渲染语言。"
+        },
+        {
+          "title": "输出",
+          "body": "最终资产包含主视觉渲染、组合产品场景与可适配电商页面、发布 deck、品牌 campaign 的辅助视觉。"
+        }
+      ],
       "coverImage": "/works/product-rendering-collection.png",
       "images": [
         "/works/product-rendering-collection.png",
         "/works/ecommerce-banner-design.png",
         "/works/dalingring-smart-ring.png"
       ],
-      "tags": ["三维渲染", "材质与工艺", "商业视觉"],
+      "tags": ["3D 渲染", "材质设计", "商业视觉"],
       "slug": "product-rendering-collection"
     },
     {
       "title": "世界杯活动海报",
-      "category": "海报设计",
+      "category": "活动传播 / 视觉设计",
       "year": "2024",
-      "description": "围绕冲击力、节奏感与品牌记忆点打造的动态活动海报方向。",
+      "description": "围绕运动感、竞争能量与品牌识别建立活动海报方向。",
+      "problem": "活动需要在高噪音的体育传播场景中被快速识别，同时保持品牌与活动信息清晰可读。",
+      "role": "主视觉概念、海报构图、字体层级与活动氛围方向。",
+      "output": "活动主视觉、海报版式与可延展到社媒和线下物料的视觉方向。",
+      "result": "交付具有冲击力的活动视觉，支持品牌记忆点与活动传播。",
+      "impact": "海报系统为活动建立了明确的视觉钩子，同时保留标题、品牌与赛事信息的清晰层级。",
+      "caseStudy": [
+        {
+          "title": "问题",
+          "body": "体育活动传播通常视觉噪音很高，设计需要同时具备冲击力、节奏感和可读性。"
+        },
+        {
+          "title": "角色",
+          "body": "我建立海报方向，控制字体尺度，并设计可以延展到多种物料的动态构图。"
+        },
+        {
+          "title": "输出",
+          "body": "输出包含关键海报、活动视觉语言与后续社媒和线下资产的版式规则。"
+        }
+      ],
       "coverImage": "/works/world-cup-campaign-poster.png",
       "images": [
         "/works/world-cup-campaign-poster.png",
@@ -102,10 +200,29 @@
       "slug": "world-cup-campaign-poster"
     },
     {
-      "title": "电商横幅设计",
-      "category": "电商横幅",
+      "title": "电商横幅视觉系统",
+      "category": "电商 / 转化视觉",
       "year": "2025",
-      "description": "高转化导向的横幅构图，将产品价值转化为优雅直接的购买动机。",
+      "description": "以转化为导向，将产品价值转化为克制、有质感的购买动机。",
+      "problem": "电商视觉需要快速呈现产品利益点，同时不能牺牲品牌的高级感。",
+      "role": "横幅结构、产品层级、卖点表达与转化导向构图。",
+      "output": "首页横幅、促销布局与产品驱动型电商 campaign 的复用规则。",
+      "result": "形成可支持产品发现、活动促销与购买决策的视觉资产。",
+      "impact": "该系统在转化清晰度和品牌质感之间取得平衡，适合电商页面、活动坑位与产品发布模块。",
+      "caseStudy": [
+        {
+          "title": "问题",
+          "body": "横幅需要同时完成两件事：快速解释产品价值，并保持符合高端品牌的视觉语气。"
+        },
+        {
+          "title": "角色",
+          "body": "我围绕转化目标组织图像层级、产品焦点、版式节奏与行动入口。"
+        },
+        {
+          "title": "输出",
+          "body": "输出包含电商主横幅、促销构图与可用于后续 campaign 更新的版式规则。"
+        }
+      ],
       "coverImage": "/works/ecommerce-banner-design.png",
       "images": [
         "/works/ecommerce-banner-design.png",
@@ -117,30 +234,68 @@
     },
     {
       "title": "品牌识别探索",
-      "category": "品牌识别",
+      "category": "品牌系统 / 视觉识别",
       "year": "2025",
-      "description": "以字体、间距和触感化视觉系统为核心的克制型品牌识别探索。",
+      "description": "以字体、间距与系统一致性为核心的克制型品牌识别探索。",
+      "problem": "品牌需要更清晰的识别方向，以支持产品、传播与数字触点中的统一表达。",
+      "role": "识别探索、字体方向、版式系统与视觉一致性检查。",
+      "output": "标志与字体研究、识别规则、应用视觉与品牌系统参考。",
+      "result": "明确品牌表达方式，并为后续传播资产建立一致的视觉基础。",
+      "impact": "该探索提供的不是孤立 logo，而是一套可使用的识别基础，帮助后续产品与市场素材保持一致。",
+      "caseStudy": [
+        {
+          "title": "问题",
+          "body": "品牌需要表达品质感和克制感，同时具备足够弹性，能用于产品沟通和数字场景。"
+        },
+        {
+          "title": "角色",
+          "body": "我探索字体、间距、标志行为与应用规则，让识别从风格参考变成可执行系统。"
+        },
+        {
+          "title": "输出",
+          "body": "输出包含识别研究、系统规则与跨触点应用示例。"
+        }
+      ],
       "coverImage": "/works/brand-identity-exploration.png",
       "images": [
         "/works/brand-identity-exploration.png",
         "/works/world-cup-campaign-poster.png",
         "/works/dalingring-smart-ring.png"
       ],
-      "tags": ["品牌系统", "字体设计", "视觉识别"],
+      "tags": ["品牌系统", "字体", "视觉识别"],
       "slug": "brand-identity-exploration"
     },
     {
       "title": "AI 视觉实验",
-      "category": "AI 视觉探索",
+      "category": "AI 视觉指导",
       "year": "2026",
-      "description": "围绕情绪、材质、光影与未来产品叙事进行的 AI 视觉指导实验。",
+      "description": "围绕情绪、材质、光影与产品叙事进行 AI 辅助视觉实验。",
+      "problem": "AI 图像容易停留在氛围层面，如果缺少明确指导，会与产品策略脱节。",
+      "role": "提示词方向、美术指导、视觉筛选与产品叙事校准。",
+      "output": "情绪板、概念视觉与可服务于产品和品牌探索的 AI 辅助方向。",
+      "result": "建立更快的前期视觉探索流程，用于在正式生产前验证视觉方向。",
+      "impact": "该项目展示 AI 工作流如何服务设计探索，同时保持与产品定位、材质线索和发布叙事一致。",
+      "caseStudy": [
+        {
+          "title": "问题",
+          "body": "实验需要避免生成泛化的 AI 氛围图，而是服务于产品相关的视觉方向。"
+        },
+        {
+          "title": "角色",
+          "body": "我指导提示词、筛选输出，并围绕材质、光影、情绪和产品叙事进行方向收敛。"
+        },
+        {
+          "title": "输出",
+          "body": "输出包含概念板、视觉方向和用于早期产品及品牌探索的 AI 辅助参考。"
+        }
+      ],
       "coverImage": "/works/ai-visual-experiments.png",
       "images": [
         "/works/ai-visual-experiments.png",
         "/works/brand-identity-exploration.png",
         "/works/product-rendering-collection.png"
       ],
-      "tags": ["AI 指导", "情绪板", "视觉概念"],
+      "tags": ["AI 视觉指导", "情绪板", "视觉概念"],
       "slug": "ai-visual-experiments"
     }
   ]

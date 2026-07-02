@@ -8,44 +8,27 @@ import {
   useSpring,
   useTransform
 } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useLiveContent } from "@/components/LiveContentProvider";
 
 export function Navigation() {
   const { content } = useLiveContent();
   const { site } = content;
-  const [activeHref, setActiveHref] = useState("/#works");
   const mouseX = useMotionValue(0);
   const glowX = useSpring(mouseX, { stiffness: 120, damping: 26, mass: 0.35 });
   const { scrollYProgress } = useScroll();
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-  const navItems = [
-    { href: "/#works", label: "作品" },
-    { href: "/#about", label: "关于" },
-    { href: "/#contact", label: "联系" }
-  ];
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (visible?.target?.id) {
-          setActiveHref(`/#${visible.target.id}`);
-        }
-      },
-      { threshold: [0.28, 0.44, 0.62], rootMargin: "-18% 0px -44% 0px" }
-    );
-
-    navItems.forEach((item) => {
-      const node = document.getElementById(item.href.replace("/#", ""));
-      if (node) observer.observe(node);
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  const navItems = useMemo(
+    () => [
+      { href: "/#works", label: "作品" },
+      { href: "/#about", label: "关于" },
+      { href: "/#contact", label: "联系" },
+      { href: "/#resume", label: "简历" }
+    ],
+    []
+  );
+  const itemClass =
+    "relative rounded-full px-3 py-1.5 text-xs font-medium text-[#1d1d1f] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-[#1d1d1f] hover:text-white hover:shadow-[0_8px_24px_rgba(29,29,31,0.16)] active:translate-y-0 active:scale-[0.97] sm:px-4 sm:text-sm";
 
   return (
     <motion.header
@@ -59,12 +42,12 @@ export function Navigation() {
           const rect = event.currentTarget.getBoundingClientRect();
           mouseX.set(event.clientX - rect.left);
         }}
-        className="group relative mx-auto flex h-14 max-w-[1040px] items-center justify-between gap-4 overflow-hidden rounded-full border border-black/[0.08] bg-white/78 px-4 text-sm text-[#1d1d1f]/72 shadow-[0_20px_70px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl md:px-5"
+        className="group relative mx-auto flex h-14 max-w-[720px] items-center justify-between gap-3 overflow-hidden rounded-full border border-black/[0.08] bg-white/78 px-4 text-sm text-[#1d1d1f]/72 shadow-[0_20px_70px_rgba(0,0,0,0.16),inset_0_1px_0_rgba(255,255,255,0.92)] backdrop-blur-2xl md:px-5"
         aria-label="主导航"
       >
         <motion.span
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 h-44 w-44 rounded-full bg-[#0071e3]/12 blur-3xl"
+          className="pointer-events-none absolute -top-24 h-44 w-44 rounded-full bg-[#0071e3]/0 blur-3xl transition-colors duration-300 group-hover:bg-[#0071e3]/12"
           style={{ x: glowX }}
         />
         <span
@@ -78,7 +61,7 @@ export function Navigation() {
         />
         <Link
           href="/"
-          className="relative z-10 min-w-0 shrink truncate rounded-full px-2 py-2 font-medium tracking-[0.01em] text-[#1d1d1f] transition hover:text-black"
+          className="relative z-10 shrink-0 rounded-full px-2 py-2 font-medium tracking-[0.01em] text-[#1d1d1f] transition-colors hover:text-black"
         >
           {site.name}
         </Link>
@@ -86,20 +69,10 @@ export function Navigation() {
           {navItems.map((item) => (
             <motion.a
               key={item.href}
-              whileHover={{ y: -1 }}
               whileTap={{ scale: 0.97 }}
-              onClick={() => setActiveHref(item.href)}
-              className="relative rounded-full px-3 py-1.5 text-xs transition sm:px-4 sm:text-sm"
-              style={{ color: activeHref === item.href ? "#ffffff" : "#1d1d1f" }}
+              className={itemClass}
               href={item.href}
             >
-              {activeHref === item.href ? (
-                <motion.span
-                  layoutId="floating-nav-active"
-                  className="absolute inset-0 rounded-full bg-[#1d1d1f] shadow-[0_8px_26px_rgba(0,0,0,0.18)]"
-                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                />
-              ) : null}
               <span className="relative z-10 whitespace-nowrap">{item.label}</span>
             </motion.a>
           ))}

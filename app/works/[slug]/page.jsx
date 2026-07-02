@@ -33,6 +33,8 @@ export default function CaseStudyPage({ params }) {
     notFound();
   }
 
+  const detailBlocks = work.caseStudy || caseStudy.infoBlocks;
+
   return (
     <main className="bg-whiteBg text-textDark">
       <section className="bg-blackBg px-6 pb-20 pt-28 text-white md:px-20 md:pb-28">
@@ -72,7 +74,7 @@ export default function CaseStudyPage({ params }) {
 
       <section className="px-6 py-20 md:px-20 md:py-28">
         <div className="mx-auto grid max-w-[1180px] gap-8 md:grid-cols-3">
-          {caseStudy.infoBlocks.map((block) => (
+          {detailBlocks.map((block) => (
             <InfoBlock key={block.title} title={block.title}>
               {block.body}
             </InfoBlock>
@@ -111,19 +113,27 @@ export default function CaseStudyPage({ params }) {
           </div>
           <div>
             <p className="text-xl leading-9 text-white/68">
-              {caseStudy.summaryBody}
+              {work.impact || caseStudy.summaryBody}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               {work.tags.map((tag) => (
                 <Tag key={tag}>{tag}</Tag>
               ))}
             </div>
-            <Link
-              href="/#works"
-              className="mt-10 inline-flex rounded-full border border-white/15 bg-white px-6 py-3 text-sm font-medium text-blackBg transition hover:bg-cool"
-            >
-              {caseStudy.backButton}
-            </Link>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link
+                href="/#works"
+                className="inline-flex rounded-full border border-white/15 bg-white px-6 py-3 text-sm font-medium text-blackBg transition hover:bg-cool"
+              >
+                {caseStudy.backButton}
+              </Link>
+              <Link
+                href="/#contact"
+                className="inline-flex rounded-full border border-white/18 px-6 py-3 text-sm font-medium text-white transition hover:bg-white/10"
+              >
+                {caseStudy.contactButton || "联系我"}
+              </Link>
+            </div>
           </div>
         </div>
       </section>
