@@ -2,6 +2,21 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import {
+  CheckCircle2,
+  Download,
+  ExternalLink,
+  FileJson,
+  ImagePlus,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Save,
+  Trash2,
+  Upload,
+  X,
+  XCircle
+} from "lucide-react";
 import { siteContent } from "@/data/contentFallback";
 
 const STORAGE_KEY = "jason-portfolio-admin-draft";
@@ -75,9 +90,46 @@ function ArrayField({ label, values, onChange }) {
   );
 }
 
-function UploadButton({ label, disabled, onUpload }) {
+function NoticeDialog({ notice, onClose }) {
+  if (!notice) return null;
+
+  const isLoading = notice.type === "loading";
+  const isError = notice.type === "error";
+  const Icon = isLoading ? Loader2 : isError ? XCircle : CheckCircle2;
+
   return (
-    <label className={`inline-flex cursor-pointer rounded-full border border-black/10 bg-white px-3 py-2 text-xs font-medium ${disabled ? "pointer-events-none opacity-50" : ""}`}>
+    <div className="fixed inset-x-0 top-5 z-50 flex justify-center px-4" role="status" aria-live="polite">
+      <div className="flex w-full max-w-md items-start gap-3 rounded-2xl border border-black/10 bg-white px-4 py-4 text-zinc-900 shadow-[0_18px_70px_rgba(0,0,0,0.18)]">
+        <Icon
+          className={`mt-0.5 h-5 w-5 shrink-0 ${
+            isLoading ? "animate-spin text-zinc-500" : isError ? "text-red-500" : "text-emerald-600"
+          }`}
+        />
+        <p className="min-w-0 flex-1 text-sm leading-6">{notice.text}</p>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900"
+          aria-label="关闭提示"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function UploadButton({ label, disabled, onUpload, variant = "solid" }) {
+  const base =
+    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition sm:w-auto";
+  const styles =
+    variant === "solid"
+      ? "bg-black text-white hover:bg-zinc-800"
+      : "border border-black/10 bg-white text-zinc-900 hover:bg-zinc-50";
+
+  return (
+    <label className={`${base} ${styles} ${disabled ? "pointer-events-none opacity-50" : ""}`}>
+      <ImagePlus className="h-4 w-4" />
       {label}
       <input
         type="file"
@@ -94,13 +146,134 @@ function UploadButton({ label, disabled, onUpload }) {
   );
 }
 
+function ImagePreview({ src, title = "图片预览" }) {
+  return (
+    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-black/10 bg-zinc-100">
+      {src ? (
+        <img src={src} alt={title} className="h-full w-full object-cover" />
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center gap-2 text-zinc-400">
+          <ImagePlus className="h-8 w-8" />
+          <span className="text-xs">暂无图片</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CoverImageEditor({ image, disabled, uploading, onChange, onUpload }) {
+  return (
+    <div className="rounded-2xl border border-black/10 bg-white p-3">
+      <div className="grid gap-3 sm:gap-4 md:grid-cols-[220px_1fr]">
+        <ImagePreview src={image} title="封面预览" />
+        <div className="flex min-w-0 flex-col justify-between gap-4">
+          <Field label="封面图片路径" value={image} onChange={onChange} />
+          <div className="grid gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <UploadButton
+              label={uploading ? "正在更换..." : "更换封面图片"}
+              disabled={disabled}
+              onUpload={onUpload}
+            />
+            {image && (
+              <a
+                href={image}
+                target="_blank"
+                className="inline-flex items-center justify-center gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-sm font-medium"
+              >
+                <ExternalLink className="h-4 w-4" />
+                打开原图
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload, onRemove }) {
+  return (
+    <div className="rounded-2xl border border-black/10 bg-white p-3">
+        <div className="mb-3 grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">详情图片</p>
+          <p className="mt-1 text-xs text-zinc-500">每张图都可以单独更换，新增图片会追加到最后。</p>
+        </div>
+        <UploadButton
+          label={uploadingKey === "new" ? "正在添加..." : "添加详情图片"}
+          disabled={disabled}
+          onUpload={(file) => onUpload(file, "new")}
+          variant="outline"
+        />
+      </div>
+
+      <div className="space-y-3">
+        {(images || []).map((image, imageIndex) => (
+          <div key={`${image}-${imageIndex}`} className="grid gap-3 rounded-2xl bg-zinc-50 p-3 sm:grid-cols-[150px_1fr]">
+            <ImagePreview src={image} title={`详情图 ${imageIndex + 1}`} />
+            <div className="flex min-w-0 flex-col justify-between gap-3">
+              <Field
+                label={`详情图 ${imageIndex + 1} 路径`}
+                value={image}
+                onChange={(value) => onChange(imageIndex, value)}
+              />
+              <div className="grid gap-2 sm:flex sm:flex-wrap">
+                <UploadButton
+                  label={uploadingKey === String(imageIndex) ? "正在更换..." : "更换这张图"}
+                  disabled={disabled}
+                  onUpload={(file) => onUpload(file, String(imageIndex))}
+                  variant="outline"
+                />
+                {image && (
+                  <a
+                    href={image}
+                    target="_blank"
+                    className="inline-flex items-center justify-center gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-sm font-medium"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    打开
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => onRemove(imageIndex)}
+                  className="inline-flex items-center justify-center gap-1 rounded-xl border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  删除
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {(!images || images.length === 0) && (
+          <div className="rounded-2xl bg-zinc-50 px-4 py-8 text-center text-sm text-zinc-500">
+            还没有详情图片，点击“添加详情图片”上传第一张。
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminPage() {
   const [content, setContent] = useState(() => cloneContent(siteContent));
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [notice, setNotice] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [uploadingKey, setUploadingKey] = useState("");
+
+  const showNotice = (text, type = "success") => {
+    setNotice({ text, type, id: Date.now() });
+  };
+
+  useEffect(() => {
+    if (!notice || notice.type === "loading") return undefined;
+    const timer = window.setTimeout(() => setNotice(null), 3800);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
 
   useEffect(() => {
     let isMounted = true;
@@ -111,7 +284,7 @@ export default function AdminPage() {
         const data = await response.json();
         if (isMounted && response.ok && data.content) {
           setContent(data.content);
-          setMessage("已加载线上最新内容。");
+          showNotice("已加载线上最新内容。");
           return;
         }
       } catch {
@@ -124,9 +297,9 @@ export default function AdminPage() {
       if (saved && isMounted) {
         try {
           setContent(JSON.parse(saved));
-          setMessage("线上内容暂时不可用，已加载本机草稿。");
+          showNotice("线上内容暂时不可用，已加载本机草稿。");
         } catch {
-          setMessage("线上内容暂时不可用，已使用内置内容。");
+          showNotice("线上内容暂时不可用，已使用内置内容。", "error");
         }
       }
     }
@@ -146,17 +319,17 @@ export default function AdminPage() {
 
   const saveDraft = () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
-    setMessage("已保存到本机浏览器草稿。");
+    showNotice("已保存到本机浏览器草稿。");
   };
 
   const uploadImage = async (file, onUploaded, label) => {
     if (!password.trim()) {
-      setMessage("上传图片前，请先在右侧输入后台密码。");
+      showNotice("上传图片前，请先在右侧输入后台密码。", "error");
       return;
     }
 
     setUploadingKey(label);
-    setMessage(`正在上传图片：${file.name}`);
+    showNotice(`正在上传图片：${file.name}`, "loading");
 
     try {
       const dataUrl = await new Promise((resolve, reject) => {
@@ -183,9 +356,9 @@ export default function AdminPage() {
       }
 
       onUploaded(data.url);
-      setMessage("图片已上传，并已写入图片路径。记得点击“保存到线上”。");
+      showNotice("图片已更换。确认效果后，记得点击“保存到线上”。");
     } catch (error) {
-      setMessage(error.message || "图片上传失败。");
+      showNotice(error.message || "图片上传失败。", "error");
     } finally {
       setUploadingKey("");
     }
@@ -193,12 +366,12 @@ export default function AdminPage() {
 
   const saveOnline = async () => {
     if (!password.trim()) {
-      setMessage("请先输入后台密码。");
+      showNotice("请先输入后台密码。", "error");
       return;
     }
 
     setIsSaving(true);
-    setMessage("正在保存到线上...");
+    showNotice("正在保存到线上...", "loading");
 
     try {
       const response = await fetch(CONTENT_API_URL, {
@@ -214,9 +387,9 @@ export default function AdminPage() {
 
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
       window.localStorage.setItem(LIVE_CONTENT_CACHE_KEY, JSON.stringify(content));
-      setMessage("已保存到线上。刷新网站页面即可看到最新内容。");
+      showNotice("已保存到线上。刷新网站页面即可看到最新内容。");
     } catch (error) {
-      setMessage(error.message || "保存失败，请稍后重试。");
+      showNotice(error.message || "保存失败，请稍后重试。", "error");
     } finally {
       setIsSaving(false);
     }
@@ -224,16 +397,17 @@ export default function AdminPage() {
 
   const resetToOnline = async () => {
     setIsLoading(true);
+    showNotice("正在重新加载线上内容...", "loading");
     try {
       const response = await fetch(CONTENT_API_URL, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.content) throw new Error();
       setContent(data.content);
       window.localStorage.setItem(LIVE_CONTENT_CACHE_KEY, JSON.stringify(data.content));
-      setMessage("已恢复为线上最新内容。");
+      showNotice("已恢复为线上最新内容。");
     } catch {
       setContent(cloneContent(siteContent));
-      setMessage("线上内容暂时不可用，已恢复为内置内容。");
+      showNotice("线上内容暂时不可用，已恢复为内置内容。", "error");
     } finally {
       setIsLoading(false);
     }
@@ -247,7 +421,7 @@ export default function AdminPage() {
     link.download = "site.json";
     link.click();
     URL.revokeObjectURL(url);
-    setMessage("已导出 site.json，可作为备份。");
+    showNotice("已导出 site.json，可作为备份。");
   };
 
   const importJson = async (file) => {
@@ -255,9 +429,9 @@ export default function AdminPage() {
     try {
       const text = await file.text();
       setContent(JSON.parse(text));
-      setMessage("已导入内容文件，确认无误后可保存到线上。");
+      showNotice("已导入内容文件，确认无误后可保存到线上。");
     } catch {
-      setMessage("导入失败，请确认文件是正确的 JSON。");
+      showNotice("导入失败，请确认文件是正确的 JSON。", "error");
     }
   };
 
@@ -279,6 +453,7 @@ export default function AdminPage() {
         }
       ]
     }));
+    showNotice("已新增作品，可以开始编辑。");
   };
 
   const removeWork = (workIndex) => {
@@ -286,6 +461,7 @@ export default function AdminPage() {
       ...current,
       works: current.works.filter((_, index) => index !== workIndex)
     }));
+    showNotice("已删除该作品。保存到线上后才会正式生效。");
   };
 
   const updateWork = (workIndex, field, value) => {
@@ -297,42 +473,64 @@ export default function AdminPage() {
     }));
   };
 
+  const updateGalleryImage = (workIndex, imageIndex, value) => {
+    setContent((current) => ({
+      ...current,
+      works: current.works.map((work, index) => {
+        if (index !== workIndex) return work;
+        const images = [...(work.images || [])];
+        images[imageIndex] = value;
+        return { ...work, images };
+      })
+    }));
+  };
+
+  const removeGalleryImage = (workIndex, imageIndex) => {
+    setContent((current) => ({
+      ...current,
+      works: current.works.map((work, index) =>
+        index === workIndex
+          ? { ...work, images: (work.images || []).filter((_, itemIndex) => itemIndex !== imageIndex) }
+          : work
+      )
+    }));
+    showNotice("已移除这张详情图。");
+  };
+
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-5 pb-16 pt-24 text-zinc-950 md:px-10">
+    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-10 pt-16 text-zinc-950 sm:px-5 md:px-10 md:pb-16 md:pt-24">
+      <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
+
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="mb-5 flex flex-col gap-4 md:mb-8 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-zinc-500">
               Portfolio Admin
             </p>
-            <h1 className="mt-2 text-4xl font-semibold tracking-normal md:text-5xl">
+            <h1 className="mt-2 text-3xl font-semibold tracking-normal md:text-5xl">
               网站内容后台
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
-              可直接修改文字，也可以上传作品图片。图片上传后会自动填入路径，最后点击保存到线上。
+              可直接修改文字。更换图片时先输入右侧后台密码，再在作品卡片里点击“更换图片”。
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Link href="/" className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+          <div className="grid gap-2 sm:flex sm:flex-wrap">
+            <Link href="/" className="rounded-full border border-black/10 bg-white px-4 py-2 text-center text-sm font-medium">
               查看网站
             </Link>
-            <button onClick={saveDraft} className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+            <button onClick={saveDraft} className="inline-flex items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+              <Save className="h-4 w-4" />
               保存草稿
             </button>
-            <button onClick={downloadJson} className="rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+            <button onClick={downloadJson} className="inline-flex items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+              <Download className="h-4 w-4" />
               导出 JSON
             </button>
           </div>
         </div>
 
-        {message && (
-          <div className="mb-6 rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm text-zinc-700">
-            {message}
-          </div>
-        )}
-
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="space-y-6">
+          <div className="space-y-5 lg:space-y-6">
             <SectionCard title="基础信息">
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="网站名称" value={content.site.name} onChange={(value) => setPath(["site", "name"], value)} />
@@ -385,14 +583,23 @@ export default function AdminPage() {
 
             <SectionCard
               title="作品列表"
-              action={<button onClick={addWork} className="rounded-full bg-black px-4 py-2 text-sm font-medium text-white">新增作品</button>}
+              action={
+                <button onClick={addWork} className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-medium text-white">
+                  <Plus className="h-4 w-4" />
+                  新增作品
+                </button>
+              }
             >
               <div className="space-y-5">
                 {content.works.map((work, index) => (
                   <div key={`${work.slug}-${index}`} className="rounded-2xl border border-black/10 bg-zinc-50 p-4">
                     <div className="mb-4 flex items-center justify-between gap-3">
-                      <h3 className="font-semibold">{work.title || `作品 ${index + 1}`}</h3>
-                      <button onClick={() => removeWork(index)} className="rounded-full border border-red-200 bg-white px-3 py-1 text-sm text-red-600">
+                      <div>
+                        <h3 className="font-semibold">{work.title || `作品 ${index + 1}`}</h3>
+                        <p className="mt-1 text-xs text-zinc-500">封面用于作品列表，详情图片用于作品详情页。</p>
+                      </div>
+                      <button onClick={() => removeWork(index)} className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white px-3 py-1 text-sm text-red-600">
+                        <Trash2 className="h-4 w-4" />
                         删除
                       </button>
                     </div>
@@ -402,43 +609,44 @@ export default function AdminPage() {
                       <Field label="链接别名 slug" value={work.slug} onChange={(value) => updateWork(index, "slug", slugify(value))} />
                       <Field label="分类" value={work.category} onChange={(value) => updateWork(index, "category", value)} />
                       <Field label="年份" value={work.year} onChange={(value) => updateWork(index, "year", value)} />
-                      <Field label="封面图片路径" value={work.coverImage} onChange={(value) => updateWork(index, "coverImage", value)} />
                       <ArrayField label="标签（一行一个）" values={work.tags} onChange={(value) => updateWork(index, "tags", value)} />
                     </div>
 
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <UploadButton
-                        label={uploadingKey === `cover-${index}` ? "上传中..." : "上传封面图"}
+                    <div className="mt-4">
+                      <Field label="作品描述" value={work.description} onChange={(value) => updateWork(index, "description", value)} multiline />
+                    </div>
+
+                    <div className="mt-4 space-y-4">
+                      <CoverImageEditor
+                        image={work.coverImage}
                         disabled={Boolean(uploadingKey)}
+                        uploading={uploadingKey === `cover-${index}`}
+                        onChange={(value) => updateWork(index, "coverImage", value)}
                         onUpload={(file) =>
                           uploadImage(file, (url) => updateWork(index, "coverImage", url), `cover-${index}`)
                         }
                       />
-                      {work.coverImage && (
-                        <a href={work.coverImage} target="_blank" className="text-xs text-zinc-500 underline">
-                          预览封面
-                        </a>
-                      )}
-                    </div>
 
-                    <div className="mt-4 grid gap-4 md:grid-cols-2">
-                      <Field label="作品描述" value={work.description} onChange={(value) => updateWork(index, "description", value)} multiline />
-                      <ArrayField label="详情图片路径（一行一个）" values={work.images} onChange={(value) => updateWork(index, "images", value)} />
-                    </div>
-
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <UploadButton
-                        label={uploadingKey === `gallery-${index}` ? "上传中..." : "上传详情图"}
+                      <GalleryImageEditor
+                        images={work.images}
                         disabled={Boolean(uploadingKey)}
-                        onUpload={(file) =>
+                        uploadingKey={uploadingKey.startsWith(`gallery-${index}-`) ? uploadingKey.replace(`gallery-${index}-`, "") : ""}
+                        onChange={(imageIndex, value) => updateGalleryImage(index, imageIndex, value)}
+                        onRemove={(imageIndex) => removeGalleryImage(index, imageIndex)}
+                        onUpload={(file, imageKey) =>
                           uploadImage(
                             file,
-                            (url) => updateWork(index, "images", [...(work.images || []), url]),
-                            `gallery-${index}`
+                            (url) => {
+                              if (imageKey === "new") {
+                                updateWork(index, "images", [...(work.images || []), url]);
+                                return;
+                              }
+                              updateGalleryImage(index, Number(imageKey), url);
+                            },
+                            `gallery-${index}-${imageKey}`
                           )
                         }
                       />
-                      <span className="text-xs text-zinc-500">详情图会追加到图片列表最后一行。</span>
                     </div>
                   </div>
                 ))}
@@ -446,8 +654,8 @@ export default function AdminPage() {
             </SectionCard>
           </div>
 
-          <aside className="space-y-4">
-            <div className="sticky top-20 rounded-3xl border border-black/10 bg-white p-5 shadow-soft">
+          <aside className="order-first space-y-4 lg:order-none">
+            <div className="rounded-2xl border border-black/10 bg-white p-4 shadow-soft sm:rounded-3xl sm:p-5 lg:sticky lg:top-20">
               <h2 className="text-lg font-semibold">线上保存</h2>
               <p className="mt-2 text-sm leading-6 text-zinc-600">
                 后台密码来自 Netlify 环境变量 ADMIN_PASSWORD。上传图片或保存内容都需要这个密码。
@@ -462,21 +670,29 @@ export default function AdminPage() {
                 <button
                   onClick={saveOnline}
                   disabled={isSaving || isLoading}
-                  className="rounded-xl bg-black px-4 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-45"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-45"
                 >
+                  {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                   {isSaving ? "正在保存..." : "保存到线上"}
                 </button>
-                <button onClick={resetToOnline} className="rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium">
+                <button onClick={resetToOnline} className="inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium">
+                  <RefreshCw className="h-4 w-4" />
                   重新加载线上内容
                 </button>
-                <label className="cursor-pointer rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-center text-sm font-medium">
+                <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-center text-sm font-medium">
+                  <FileJson className="h-4 w-4" />
                   导入 JSON
                   <input type="file" accept="application/json" onChange={(event) => importJson(event.target.files?.[0])} className="hidden" />
                 </label>
               </div>
-              <pre className="mt-5 max-h-[420px] overflow-auto rounded-2xl bg-zinc-950 p-4 text-xs leading-5 text-zinc-100">
-                {jsonPreview}
-              </pre>
+              <details className="mt-4 lg:open">
+                <summary className="cursor-pointer rounded-xl bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-700">
+                  查看 JSON 预览
+                </summary>
+                <pre className="mt-3 max-h-[320px] overflow-auto rounded-2xl bg-zinc-950 p-4 text-xs leading-5 text-zinc-100 lg:max-h-[420px]">
+                  {jsonPreview}
+                </pre>
+              </details>
             </div>
           </aside>
         </div>
@@ -487,9 +703,9 @@ export default function AdminPage() {
 
 function SectionCard({ title, action, children }) {
   return (
-    <section className="rounded-3xl border border-black/10 bg-white p-5 shadow-soft md:p-6">
-      <div className="mb-5 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold">{title}</h2>
+    <section className="rounded-2xl border border-black/10 bg-white p-4 shadow-soft sm:rounded-3xl md:p-6">
+      <div className="mb-4 grid gap-3 sm:mb-5 sm:flex sm:items-center sm:justify-between">
+        <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
         {action}
       </div>
       {children}
