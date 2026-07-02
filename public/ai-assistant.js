@@ -2,14 +2,14 @@
   const functionPaths = Array.from(
     new Set([
       window.location.protocol === "file:"
-        ? "http://127.0.0.1:5173/.netlify/functions/chat"
-        : "/.netlify/functions/chat",
-      `${window.location.origin}/.netlify/functions/chat`,
-      "http://127.0.0.1:5173/.netlify/functions/chat"
+        ? "http://127.0.0.1:3000/api/chat"
+        : "/api/chat",
+      `${window.location.origin}/api/chat`,
+      "http://127.0.0.1:3000/api/chat"
     ])
   );
   const fallback = "目前网站资料中没有相关信息，可以通过联系方式进一步咨询 Jason。";
-  const starters = ["随便聊聊", "帮我想个海报方向", "看看我的想法"];
+  const starters = ["你擅长什么", "一句话总结你自己", "看看我的想法"];
   const state = {
     open: false,
     loading: false,
