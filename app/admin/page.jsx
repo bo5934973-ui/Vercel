@@ -20,7 +20,7 @@ import {
 import { siteContent } from "@/data/contentFallback";
 
 const STORAGE_KEY = "jason-portfolio-admin-draft";
-const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content";
+const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
 const CONTENT_API_URL = process.env.NEXT_PUBLIC_CONTENT_API_URL || "/api/content";
 const MEDIA_API_URL = process.env.NEXT_PUBLIC_MEDIA_API_URL || "/api/media";
 
