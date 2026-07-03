@@ -8,7 +8,7 @@ import {
   useSpring,
   useTransform
 } from "framer-motion";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLiveContent } from "@/components/LiveContentProvider";
 
 export function Navigation() {
@@ -27,8 +27,59 @@ export function Navigation() {
     ],
     []
   );
+  const [activeHref, setActiveHref] = useState(navItems[0].href);
   const itemClass =
-    "relative rounded-full px-3 py-1.5 text-xs font-medium text-[#1d1d1f] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-[#1d1d1f] hover:text-white hover:shadow-[0_8px_24px_rgba(29,29,31,0.16)] active:translate-y-0 active:scale-[0.97] sm:px-4 sm:text-sm";
+    "relative overflow-hidden rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] sm:px-4 sm:text-sm";
+
+  useEffect(() => {
+    const sections = navItems
+      .map((item) => ({
+        ...item,
+        id: item.href.split("#")[1]
+      }))
+      .filter((item) => item.id);
+
+    const syncFromLocation = () => {
+      if (window.location.pathname.startsWith("/work")) {
+        setActiveHref("/#works");
+        return;
+      }
+
+      const hashItem = sections.find((item) => `#${item.id}` === window.location.hash);
+      if (hashItem) setActiveHref(hashItem.href);
+    };
+
+    syncFromLocation();
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (!visible) return;
+
+        const nextItem = sections.find((item) => item.id === visible.target.id);
+        if (nextItem) setActiveHref(nextItem.href);
+      },
+      {
+        rootMargin: "-32% 0px -58% 0px",
+        threshold: [0.08, 0.18, 0.32, 0.48]
+      }
+    );
+
+    sections.forEach((item) => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    window.addEventListener("hashchange", syncFromLocation);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("hashchange", syncFromLocation);
+    };
+  }, [navItems]);
 
   return (
     <motion.header
@@ -66,16 +117,33 @@ export function Navigation() {
           {site.name}
         </Link>
         <div className="relative z-10 flex shrink-0 items-center gap-1 rounded-full border border-black/[0.07] bg-white/55 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.86)]">
-          {navItems.map((item) => (
+          {navItems.map((item) => {
+            const isActive = activeHref === item.href;
+
+            return (
             <motion.a
               key={item.href}
               whileTap={{ scale: 0.97 }}
-              className={itemClass}
+              className={`${itemClass} ${
+                isActive
+                  ? "text-white shadow-[0_8px_24px_rgba(29,29,31,0.16)]"
+                  : "text-[#1d1d1f] hover:bg-[#1d1d1f]/8"
+              }`}
               href={item.href}
+              onClick={() => setActiveHref(item.href)}
+              aria-current={isActive ? "page" : undefined}
             >
+              {isActive && (
+                <motion.span
+                  layoutId="nav-active-pill"
+                  className="absolute inset-0 rounded-full bg-[#1d1d1f]"
+                  transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.7 }}
+                />
+              )}
               <span className="relative z-10 whitespace-nowrap">{item.label}</span>
             </motion.a>
-          ))}
+            );
+          })}
         </div>
       </nav>
     </motion.header>
