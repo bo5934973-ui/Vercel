@@ -6,6 +6,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const CONTENT_PATH = "content/site.json";
+const CONTENT_CACHE_TTL = 60 * 1000;
+
+let cachedContent = null;
+let cachedAt = 0;
 
 function validateContent(content) {
   return (
@@ -24,31 +28,48 @@ function json(body, init = {}) {
   return NextResponse.json(body, {
     ...init,
     headers: {
-      "Cache-Control": "no-store",
+      "Cache-Control": init.cacheControl || "no-store",
       ...(init.headers || {})
     }
   });
 }
 
 async function getStoredContent() {
+  if (cachedContent && Date.now() - cachedAt < CONTENT_CACHE_TTL) {
+    return cachedContent;
+  }
+
   const { blobs } = await list({
     prefix: CONTENT_PATH,
     limit: 1
   });
   const blob = blobs.find((item) => item.pathname === CONTENT_PATH) || blobs[0];
 
-  if (!blob?.url) return siteContent;
+  if (!blob?.url) {
+    cachedContent = siteContent;
+    cachedAt = Date.now();
+    return siteContent;
+  }
 
   const response = await fetch(blob.url, { cache: "no-store" });
-  if (!response.ok) return siteContent;
+  if (!response.ok) {
+    cachedContent = siteContent;
+    cachedAt = Date.now();
+    return siteContent;
+  }
 
-  return response.json();
+  cachedContent = await response.json();
+  cachedAt = Date.now();
+  return cachedContent;
 }
 
 export async function GET() {
   try {
     const content = await getStoredContent();
-    return json({ content });
+    return json(
+      { content },
+      { cacheControl: "public, max-age=0, s-maxage=60, stale-while-revalidate=300" }
+    );
   } catch {
     return json({ content: siteContent });
   }
@@ -81,6 +102,9 @@ export async function POST(request) {
     contentType: "application/json; charset=utf-8",
     cacheControlMaxAge: 60
   });
+
+  cachedContent = body.content;
+  cachedAt = Date.now();
 
   return json({ content: body.content, savedAt: new Date().toISOString() });
 }
