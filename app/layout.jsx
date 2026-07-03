@@ -31,14 +31,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="zh-CN" className="content-pending">
+    <html lang="zh-CN">
       <head>
-        <style
-          dangerouslySetInnerHTML={{
-            __html:
-              "html.content-pending body{opacity:0}body{transition:opacity .16s ease}"
-          }}
-        />
         <link rel="stylesheet" href="/ai-assistant.css?v=next-layout-1" />
       </head>
       <body>
