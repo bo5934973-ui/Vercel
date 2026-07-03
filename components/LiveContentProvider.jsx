@@ -5,6 +5,7 @@ import { siteContent as fallbackContent } from "@/data/contentFallback";
 
 const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
 const CONTENT_API_URL = process.env.NEXT_PUBLIC_CONTENT_API_URL || "/api/content";
+const CONTENT_REQUEST_TIMEOUT = 3500;
 
 const ContentContext = createContext({
   content: fallbackContent,
@@ -13,35 +14,30 @@ const ContentContext = createContext({
 
 export function LiveContentProvider({ initialContent = fallbackContent, children }) {
   const [content, setContent] = useState(initialContent);
-  const [isLiveContentLoading, setIsLiveContentLoading] = useState(true);
+  const [isLiveContentLoading, setIsLiveContentLoading] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
-
-    const showPage = () => {
-      requestAnimationFrame(() => {
-        document.documentElement.classList.remove("content-pending");
-      });
-    };
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CONTENT_REQUEST_TIMEOUT);
 
     async function loadContent() {
-      let hasCachedContent = false;
-
       try {
         const cachedContent = window.localStorage.getItem(LIVE_CONTENT_CACHE_KEY);
         if (cachedContent) {
           const parsedContent = JSON.parse(cachedContent);
-          hasCachedContent = true;
-          setContent(parsedContent);
-          showPage();
+          if (isMounted) setContent(parsedContent);
         }
       } catch {
         window.localStorage.removeItem(LIVE_CONTENT_CACHE_KEY);
       }
 
+      if (isMounted) setIsLiveContentLoading(true);
+
       try {
         const response = await fetch(CONTENT_API_URL, {
-          cache: "no-store"
+          cache: "no-store",
+          signal: controller.signal
         });
         const data = await response.json();
         if (isMounted && response.ok && data.content) {
@@ -53,8 +49,8 @@ export function LiveContentProvider({ initialContent = fallbackContent, children
       } finally {
         if (isMounted) {
           setIsLiveContentLoading(false);
-          if (!hasCachedContent) showPage();
         }
+        window.clearTimeout(timeout);
       }
     }
 
@@ -62,6 +58,8 @@ export function LiveContentProvider({ initialContent = fallbackContent, children
 
     return () => {
       isMounted = false;
+      controller.abort();
+      window.clearTimeout(timeout);
     };
   }, []);
 
