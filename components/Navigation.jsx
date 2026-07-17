@@ -83,7 +83,7 @@ export function Navigation() {
 
   return (
     <motion.header
-      initial={{ y: -24, opacity: 0, scale: 0.96 }}
+      initial={false}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       className="fixed inset-x-0 top-4 z-50 px-4 sm:top-5"
