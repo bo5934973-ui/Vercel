@@ -1,93 +1,101 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { ArrowUpRight, Download, Sparkles } from "lucide-react";
 import { useLiveContent } from "@/components/LiveContentProvider";
+
+const AgentCore = dynamic(
+  () => import("@/components/AgentCore").then((module) => module.AgentCore),
+  {
+    ssr: false,
+    loading: () => <div className="agent-core-loading" aria-hidden="true" />
+  }
+);
+
+const SKILLS = [
+  { label: "视觉设计", layer: "design", angle: 0 },
+  { label: "品牌识别", layer: "design", angle: 120 },
+  { label: "视觉策划", layer: "design", angle: 240 },
+  { label: "Figma", layer: "tools", angle: 45 },
+  { label: "Photoshop", layer: "tools", angle: 165 },
+  { label: "Blender", layer: "tools", angle: 285 },
+  { label: "3D 渲染", layer: "fields", angle: 0 },
+  { label: "AI 创意", layer: "fields", angle: 90 },
+  { label: "产品视觉", layer: "fields", angle: 180 },
+  { label: "平面设计", layer: "fields", angle: 270 }
+];
 
 export function Hero() {
   const { scrollY } = useScroll();
   const reducedMotion = useReducedMotion();
-  const visualY = useTransform(scrollY, [0, 900], [0, reducedMotion ? 0 : 72]);
-  const fade = useTransform(scrollY, [0, 720], [1, 0.72]);
+  const visualY = useTransform(scrollY, [0, 900], [0, reducedMotion ? 0 : 36]);
+  const fade = useTransform(scrollY, [0, 720], [1, 0.86]);
   const { content } = useLiveContent();
-  const { hero, works } = content;
-  const heroWorks = works.slice(0, 3);
-  const buttonBase =
-    "inline-flex h-14 min-w-[172px] items-center justify-center rounded-full px-8 text-[20px] font-medium leading-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black/20 focus:ring-offset-2 focus:ring-offset-[#f5f5f7]";
+  const { hero, site } = content;
+  const resumeUrl = site.resumeUrl || hero.resumeUrl;
 
   return (
-    <section className="relative min-h-[100dvh] overflow-hidden bg-[#f5f5f7] px-5 pb-20 pt-24 text-[#1d1d1f] md:px-10 md:pb-28 md:pt-28 lg:pb-32">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(255,255,255,0))]" />
-      <motion.div style={{ opacity: fade }} className="relative z-10 mx-auto flex max-w-[1440px] flex-col items-center text-center">
-        <div className="max-w-4xl">
+    <section className="apple-hero relative min-h-[100dvh] overflow-hidden bg-[#f5f5f7] px-5 pb-16 pt-24 text-[#1d1d1f] md:px-10 md:pb-20 md:pt-28">
+      <div className="apple-hero-toplight pointer-events-none absolute inset-x-0 top-0 h-52" />
+      <motion.div style={{ opacity: fade }} className="relative z-10 mx-auto grid min-h-[calc(100dvh-7rem)] max-w-[1440px] items-center gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-0">
+        <div className="relative z-20 max-w-[650px] pb-4 lg:pb-16">
           <motion.p
-            initial={{ opacity: 0, y: 18 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mb-5 max-w-3xl text-sm font-medium uppercase tracking-[0.16em] text-[#6e6e73]"
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]"
           >
-            {hero.eyebrow}
+            <Sparkles className="h-3.5 w-3.5 text-[#6b88b8]" />
+            {hero.eyebrow || "Independent designer"}
           </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 28 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.82, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl font-semibold leading-none tracking-normal md:text-7xl lg:text-8xl"
+            transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[clamp(4rem,8vw,7.8rem)] font-semibold leading-[0.9] tracking-[-0.075em]"
           >
-            {hero.title}
+            Jason Qiu
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 24 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.78, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mt-4 max-w-2xl text-xl font-medium leading-8 text-[#1d1d1f] md:mt-5 md:text-3xl md:leading-[1.22]"
+            transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-7 max-w-[590px] text-xl font-medium leading-[1.45] tracking-[-0.025em] text-[#424245] md:text-[28px] md:leading-[1.28]"
           >
-            {hero.description}
+            视觉设计、渲染与品牌表达，专注于平面设计、视觉策划、品牌设计与 AI 创意。
           </motion.p>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8 flex flex-wrap justify-center gap-4 sm:gap-5"
+            transition={{ duration: 0.65, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-9 flex flex-wrap gap-3"
           >
-            <a href="#works" className={`${buttonBase} bg-black text-white hover:bg-[#1d1d1f]`}>
-              {hero.primaryButton}
+            <a href="#works" className="apple-hero-primary inline-flex h-12 items-center gap-2 rounded-full bg-[#1d1d1f] px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-black active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black/20 focus:ring-offset-2">
+              {hero.primaryButton || "查看作品"}
+              <ArrowUpRight className="h-4 w-4" />
             </a>
-            <a href="#contact" className={`${buttonBase} border border-black bg-transparent text-black hover:bg-black hover:text-white`}>
-              {hero.secondaryButton}
+            <a href="#contact" className="inline-flex h-12 items-center rounded-full border border-[#d2d2d7] bg-white/60 px-6 text-sm font-semibold text-[#1d1d1f] transition hover:-translate-y-0.5 hover:border-[#86868b] hover:bg-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black/15 focus:ring-offset-2">
+              {hero.secondaryButton || "联系我"}
             </a>
+            {resumeUrl && (
+              <a href={resumeUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-sm font-semibold text-[#6e6e73] transition hover:text-[#1d1d1f]">
+                <Download className="h-4 w-4" />
+                下载简历
+              </a>
+            )}
           </motion.div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 24 }}
+          initial={false}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
           style={{ y: visualY }}
-          className="relative mt-12 h-[420px] w-full max-w-[1180px] md:mt-16 md:h-[540px] lg:h-[620px]"
+          className="agent-core-stage relative mx-auto h-[500px] w-full max-w-[720px] md:h-[620px] lg:h-[720px]"
+          aria-label="设计能力展示"
         >
-          <div className="absolute inset-x-6 bottom-0 h-24 rounded-[50%] bg-black/10 blur-3xl" />
-          {heroWorks.map((work, index) => (
-            <a
-              key={work.slug}
-              href={`/work/?slug=${encodeURIComponent(work.slug)}`}
-              className={[
-                "group absolute overflow-hidden rounded-[28px] bg-white shadow-[0_34px_90px_rgba(30,36,48,0.18)] ring-1 ring-black/5 transition duration-500 hover:-translate-y-2 hover:shadow-[0_40px_120px_rgba(30,36,48,0.24)]",
-                index === 0 ? "bottom-0 left-1/2 z-30 h-[86%] w-[40%] -translate-x-1/2" : "",
-                index === 1 ? "bottom-8 left-[3%] z-20 h-[62%] w-[26%] rotate-[-4deg]" : "",
-                index === 2 ? "bottom-10 right-[3%] z-20 h-[60%] w-[26%] rotate-[4deg]" : ""
-              ].join(" ")}
-              aria-label={work.title}
-            >
-              <img
-                src={`${work.coverImage}?v=apple-home-1`}
-                alt={work.title}
-                loading={index === 0 ? "eager" : "lazy"}
-                decoding="async"
-                className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
-              />
-              <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.16),transparent_46%,rgba(0,0,0,0.08))]" />
-            </a>
-          ))}
+          <AgentCore />
         </motion.div>
       </motion.div>
     </section>
