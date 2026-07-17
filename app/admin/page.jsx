@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   CheckCircle2,
   Download,
+  Eye,
   ExternalLink,
   FileJson,
   ImagePlus,
@@ -12,6 +13,7 @@ import {
   Plus,
   RefreshCw,
   Save,
+  Settings2,
   Trash2,
   Upload,
   X,
@@ -23,6 +25,14 @@ const STORAGE_KEY = "jason-portfolio-admin-draft";
 const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
 const CONTENT_API_URL = process.env.NEXT_PUBLIC_CONTENT_API_URL || "/api/content";
 const MEDIA_API_URL = process.env.NEXT_PUBLIC_MEDIA_API_URL || "/api/media";
+
+const EDITOR_SECTIONS = [
+  { id: "hero", label: "首页首屏", hint: "标题、简介与按钮" },
+  { id: "works", label: "作品管理", hint: "作品内容与图片" },
+  { id: "about", label: "关于我", hint: "介绍与技能标签" },
+  { id: "contact", label: "联系方式", hint: "邮箱与行动按钮" },
+  { id: "site", label: "网站设置", hint: "名称、页脚与简历" }
+];
 
 function cloneContent(value) {
   return JSON.parse(JSON.stringify(value));
@@ -48,13 +58,26 @@ function updateAtPath(source, path, nextValue) {
   return copy;
 }
 
-function Field({ label, value, onChange, multiline = false, placeholder = "" }) {
+function isValidContent(value) {
+  return Boolean(
+    value &&
+      typeof value === "object" &&
+      value.site &&
+      value.hero &&
+      value.worksSection &&
+      value.about &&
+      value.contact &&
+      Array.isArray(value.works)
+  );
+}
+
+function Field({ label, value, onChange, multiline = false, placeholder = "", type = "text", autoComplete }) {
   const className =
-    "mt-2 w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm outline-none transition focus:border-black/40";
+    "admin-field-input mt-2 w-full rounded-xl border px-3 py-2.5 text-sm outline-none transition";
 
   return (
     <label className="block">
-      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">
+      <span className="admin-field-label text-xs font-semibold tracking-[0.04em]">
         {label}
       </span>
       {multiline ? (
@@ -70,6 +93,8 @@ function Field({ label, value, onChange, multiline = false, placeholder = "" }) 
           value={value || ""}
           onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
+          type={type}
+          autoComplete={autoComplete}
           className={className}
         />
       )}
@@ -99,7 +124,7 @@ function NoticeDialog({ notice, onClose }) {
 
   return (
     <div className="fixed inset-x-0 top-5 z-50 flex justify-center px-4" role="status" aria-live="polite">
-      <div className="flex w-full max-w-md items-start gap-3 rounded-2xl border border-black/10 bg-white px-4 py-4 text-zinc-900 shadow-[0_18px_70px_rgba(0,0,0,0.18)]">
+      <div className="admin-notice flex w-full max-w-md items-start gap-3 rounded-2xl border px-4 py-4 text-zinc-900">
         <Icon
           className={`mt-0.5 h-5 w-5 shrink-0 ${
             isLoading ? "animate-spin text-zinc-500" : isError ? "text-red-500" : "text-emerald-600"
@@ -109,7 +134,7 @@ function NoticeDialog({ notice, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full p-1 text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900"
+          className="rounded-full p-1 text-zinc-400 transition hover:bg-[#eef5ff] hover:text-[#1d1d1f]"
           aria-label="关闭提示"
         >
           <X className="h-4 w-4" />
@@ -121,11 +146,11 @@ function NoticeDialog({ notice, onClose }) {
 
 function UploadButton({ label, disabled, onUpload, variant = "solid" }) {
   const base =
-    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition sm:w-auto";
+    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition active:scale-[0.98] sm:w-auto";
   const styles =
     variant === "solid"
-      ? "bg-black text-white hover:bg-zinc-800"
-      : "border border-black/10 bg-white text-zinc-900 hover:bg-zinc-50";
+      ? "admin-primary-button"
+      : "admin-secondary-button border";
 
   return (
     <label className={`${base} ${styles} ${disabled ? "pointer-events-none opacity-50" : ""}`}>
@@ -146,9 +171,33 @@ function UploadButton({ label, disabled, onUpload, variant = "solid" }) {
   );
 }
 
+function ResumeUploadButton({ disabled, uploading, onUpload }) {
+  return (
+    <label
+      className={`admin-primary-button inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition active:scale-[0.98] sm:w-auto ${
+        disabled ? "pointer-events-none opacity-50" : ""
+      }`}
+    >
+      <Upload className="h-4 w-4" />
+      {uploading ? "正在上传 PDF..." : "上传简历 PDF"}
+      <input
+        type="file"
+        accept="application/pdf,.pdf"
+        className="hidden"
+        disabled={disabled}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = "";
+          if (file) onUpload(file);
+        }}
+      />
+    </label>
+  );
+}
+
 function ImagePreview({ src, title = "图片预览" }) {
   return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-black/10 bg-zinc-100">
+    <div className="admin-image-preview relative aspect-[4/3] overflow-hidden rounded-2xl border">
       {src ? (
         <img src={src} alt={title} className="h-full w-full object-cover" />
       ) : (
@@ -163,7 +212,7 @@ function ImagePreview({ src, title = "图片预览" }) {
 
 function CoverImageEditor({ image, disabled, uploading, onChange, onUpload }) {
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-3">
+    <div className="admin-surface-card rounded-2xl border p-3">
       <div className="grid gap-3 sm:gap-4 md:grid-cols-[220px_1fr]">
         <ImagePreview src={image} title="封面预览" />
         <div className="flex min-w-0 flex-col justify-between gap-4">
@@ -178,7 +227,7 @@ function CoverImageEditor({ image, disabled, uploading, onChange, onUpload }) {
               <a
                 href={image}
                 target="_blank"
-                className="inline-flex items-center justify-center gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-sm font-medium"
+                className="admin-secondary-button inline-flex items-center justify-center gap-1 rounded-xl border px-3 py-2 text-sm font-medium"
               >
                 <ExternalLink className="h-4 w-4" />
                 打开原图
@@ -193,7 +242,7 @@ function CoverImageEditor({ image, disabled, uploading, onChange, onUpload }) {
 
 function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload, onRemove }) {
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-3">
+    <div className="admin-surface-card rounded-2xl border p-3">
         <div className="mb-3 grid gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-zinc-500">详情图片</p>
@@ -209,7 +258,7 @@ function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload
 
       <div className="space-y-3">
         {(images || []).map((image, imageIndex) => (
-          <div key={`${image}-${imageIndex}`} className="grid gap-3 rounded-2xl bg-zinc-50 p-3 sm:grid-cols-[150px_1fr]">
+          <div key={`${image}-${imageIndex}`} className="admin-subtle-panel grid gap-3 rounded-2xl p-3 sm:grid-cols-[150px_1fr]">
             <ImagePreview src={image} title={`详情图 ${imageIndex + 1}`} />
             <div className="flex min-w-0 flex-col justify-between gap-3">
               <Field
@@ -228,7 +277,7 @@ function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload
                   <a
                     href={image}
                     target="_blank"
-                    className="inline-flex items-center justify-center gap-1 rounded-xl border border-black/10 bg-white px-3 py-2 text-sm font-medium"
+                    className="admin-secondary-button inline-flex items-center justify-center gap-1 rounded-xl border px-3 py-2 text-sm font-medium"
                   >
                     <ExternalLink className="h-4 w-4" />
                     打开
@@ -248,7 +297,7 @@ function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload
         ))}
 
         {(!images || images.length === 0) && (
-          <div className="rounded-2xl bg-zinc-50 px-4 py-8 text-center text-sm text-zinc-500">
+          <div className="admin-subtle-panel rounded-2xl px-4 py-8 text-center text-sm text-zinc-500">
             还没有详情图片，点击“添加详情图片”上传第一张。
           </div>
         )}
@@ -259,11 +308,16 @@ function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload
 
 export default function AdminPage() {
   const [content, setContent] = useState(() => cloneContent(siteContent));
+  const [savedContentJson, setSavedContentJson] = useState(() => JSON.stringify(siteContent));
   const [password, setPassword] = useState("");
   const [notice, setNotice] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [uploadingKey, setUploadingKey] = useState("");
+  const [activeSection, setActiveSection] = useState("hero");
+  const [selectedWorkIndex, setSelectedWorkIndex] = useState(0);
+  const [mobilePane, setMobilePane] = useState("edit");
+  const previewRef = useRef(null);
 
   const showNotice = (text, type = "success") => {
     setNotice({ text, type, id: Date.now() });
@@ -284,6 +338,7 @@ export default function AdminPage() {
         const data = await response.json();
         if (isMounted && response.ok && data.content) {
           setContent(data.content);
+          setSavedContentJson(JSON.stringify(data.content));
           showNotice("已加载线上最新内容。");
           return;
         }
@@ -311,7 +366,31 @@ export default function AdminPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const sendPreviewContent = () => {
+      previewRef.current?.contentWindow?.postMessage(
+        { type: "portfolio-preview-content", content },
+        "*"
+      );
+    };
+
+    sendPreviewContent();
+    const receivePreviewReady = (event) => {
+      if (event.data?.type === "portfolio-preview-ready") sendPreviewContent();
+    };
+    window.addEventListener("message", receivePreviewReady);
+    return () => window.removeEventListener("message", receivePreviewReady);
+  }, [content]);
+
+  useEffect(() => {
+    if (selectedWorkIndex >= content.works.length) {
+      setSelectedWorkIndex(Math.max(0, content.works.length - 1));
+    }
+  }, [content.works.length, selectedWorkIndex]);
+
   const jsonPreview = useMemo(() => JSON.stringify(content, null, 2), [content]);
+  const contentJson = useMemo(() => JSON.stringify(content), [content]);
+  const isDirty = contentJson !== savedContentJson;
 
   const setPath = (path, value) => {
     setContent((current) => updateAtPath(current, path, value));
@@ -325,6 +404,11 @@ export default function AdminPage() {
   const uploadImage = async (file, onUploaded, label) => {
     if (!password.trim()) {
       showNotice("上传图片前，请先在右侧输入后台密码。", "error");
+      return;
+    }
+
+    if (!file.type.startsWith("image/") || file.size > 12 * 1024 * 1024) {
+      showNotice("图片必须是支持的格式，且不能超过 12MB。", "error");
       return;
     }
 
@@ -364,6 +448,62 @@ export default function AdminPage() {
     }
   };
 
+  const uploadResumePdf = async (file) => {
+    if (!password.trim()) {
+      showNotice("上传 PDF 前，请先在右侧输入后台密码。", "error");
+      return;
+    }
+
+    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+      showNotice("请上传 PDF 格式的简历文件。", "error");
+      return;
+    }
+
+    if (file.size > 12 * 1024 * 1024) {
+      showNotice("PDF 不能超过 12MB。", "error");
+      return;
+    }
+
+    setUploadingKey("resume-pdf");
+    showNotice(`正在上传简历 PDF：${file.name}`, "loading");
+
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const response = await fetch(MEDIA_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          password,
+          filename: file.name,
+          contentType: "application/pdf",
+          data: dataUrl
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "简历 PDF 上传失败。");
+      }
+
+      setContent((current) => ({
+        ...current,
+        site: { ...current.site, resumeUrl: data.url },
+        hero: { ...current.hero, resumeUrl: data.url }
+      }));
+      showNotice("简历 PDF 已上传并写入下载链接，确认后请保存到线上。");
+    } catch (error) {
+      showNotice(error.message || "简历 PDF 上传失败。", "error");
+    } finally {
+      setUploadingKey("");
+    }
+  };
+
   const saveOnline = async () => {
     if (!password.trim()) {
       showNotice("请先输入后台密码。", "error");
@@ -387,6 +527,7 @@ export default function AdminPage() {
 
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
       window.localStorage.setItem(LIVE_CONTENT_CACHE_KEY, JSON.stringify(content));
+      setSavedContentJson(JSON.stringify(content));
       showNotice("已保存到线上。刷新网站页面即可看到最新内容。");
     } catch (error) {
       showNotice(error.message || "保存失败，请稍后重试。", "error");
@@ -403,6 +544,7 @@ export default function AdminPage() {
       const data = await response.json();
       if (!response.ok || !data.content) throw new Error();
       setContent(data.content);
+      setSavedContentJson(JSON.stringify(data.content));
       window.localStorage.setItem(LIVE_CONTENT_CACHE_KEY, JSON.stringify(data.content));
       showNotice("已恢复为线上最新内容。");
     } catch {
@@ -428,7 +570,9 @@ export default function AdminPage() {
     if (!file) return;
     try {
       const text = await file.text();
-      setContent(JSON.parse(text));
+      const importedContent = JSON.parse(text);
+      if (!isValidContent(importedContent)) throw new Error("invalid-content");
+      setContent(importedContent);
       showNotice("已导入内容文件，确认无误后可保存到线上。");
     } catch {
       showNotice("导入失败，请确认文件是正确的 JSON。", "error");
@@ -437,6 +581,7 @@ export default function AdminPage() {
 
   const addWork = () => {
     const title = "New Project";
+    setSelectedWorkIndex(content.works.length);
     setContent((current) => ({
       ...current,
       works: [
@@ -457,6 +602,12 @@ export default function AdminPage() {
   };
 
   const removeWork = (workIndex) => {
+    if (!window.confirm("确定删除这个作品吗？保存到线上后才会正式生效。")) return;
+    setSelectedWorkIndex((current) => {
+      if (current > workIndex) return current - 1;
+      if (current === workIndex) return Math.max(0, current - 1);
+      return current;
+    });
     setContent((current) => ({
       ...current,
       works: current.works.filter((_, index) => index !== workIndex)
@@ -498,49 +649,108 @@ export default function AdminPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f5f5f7] px-4 pb-10 pt-16 text-zinc-950 sm:px-5 md:px-10 md:pb-16 md:pt-24">
+    <main className="portfolio-admin-page admin-shell min-h-[100dvh] px-3 pb-24 pt-3 text-[#1d1d1f] sm:px-4 sm:pt-4 xl:h-[100dvh] xl:overflow-hidden xl:pb-4">
       <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
 
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-5 flex flex-col gap-4 md:mb-8 md:flex-row md:items-end md:justify-between">
+      <div className="mx-auto max-w-[1800px]">
+        <div className="admin-topbar mb-3 flex flex-col gap-3 rounded-2xl border px-4 py-3 sm:px-5 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-zinc-500">
-              Portfolio Admin
+            <p className="text-[10px] font-semibold tracking-[0.14em] text-[#0071e3]">
+              JASON QIU · CONTENT STUDIO
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-normal md:text-5xl">
+            <h1 className="mt-0.5 text-2xl font-semibold tracking-[-0.025em] md:text-3xl">
               网站内容后台
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">
+            <p className="mt-1 hidden max-w-2xl text-xs leading-5 text-zinc-500 lg:block">
               可直接修改文字。更换图片时先输入右侧后台密码，再在作品卡片里点击“更换图片”。
             </p>
           </div>
-          <div className="grid gap-2 sm:flex sm:flex-wrap">
-            <Link href="/" className="rounded-full border border-black/10 bg-white px-4 py-2 text-center text-sm font-medium">
+          <div className="flex flex-wrap gap-2">
+            <span className={`inline-flex items-center rounded-xl px-3 py-2 text-sm font-medium ${isDirty ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}>
+              <span className={`mr-2 h-1.5 w-1.5 rounded-full ${isDirty ? "bg-amber-500" : "bg-emerald-500"}`} />
+              {isDirty ? "有未发布修改" : "内容已同步"}
+            </span>
+            <Link href="/" className="admin-secondary-button rounded-xl border px-3 py-2 text-center text-sm font-medium transition active:scale-[0.98]">
               查看网站
             </Link>
-            <button onClick={saveDraft} className="inline-flex items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+            <button onClick={saveDraft} className="admin-secondary-button inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition active:scale-[0.98]">
               <Save className="h-4 w-4" />
               保存草稿
             </button>
-            <button onClick={downloadJson} className="inline-flex items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2 text-sm font-medium">
+            <button onClick={downloadJson} className="admin-secondary-button hidden items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition active:scale-[0.98] sm:inline-flex">
               <Download className="h-4 w-4" />
               导出 JSON
             </button>
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="space-y-5 lg:space-y-6">
-            <SectionCard title="基础信息">
+        <div className="admin-section-tabs mb-3 flex gap-1 overflow-x-auto rounded-2xl border p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-5">
+          {EDITOR_SECTIONS.map((section) => (
+            <button
+              key={section.id}
+              type="button"
+              onClick={() => {
+                setActiveSection(section.id);
+                setMobilePane("edit");
+              }}
+              className={`min-w-[116px] rounded-xl px-3 py-2 text-left transition sm:min-w-0 ${
+                activeSection === section.id
+                  ? "admin-section-tab-active text-white"
+                  : "text-zinc-600 hover:bg-[#eef5ff] hover:text-[#1d1d1f]"
+              }`}
+            >
+              <span className="block whitespace-nowrap text-sm font-semibold">{section.label}</span>
+              <span className={`mt-0.5 hidden text-[11px] lg:block ${activeSection === section.id ? "text-white/55" : "text-zinc-400"}`}>
+                {section.hint}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-3 xl:h-[calc(100dvh-166px)] xl:grid-cols-[minmax(420px,560px)_minmax(0,1fr)]">
+          <div className={`${mobilePane === "preview" ? "hidden" : "block"} admin-editor-panel min-h-[520px] overflow-hidden rounded-[24px] border xl:block xl:h-full`}>
+            <div className="h-full space-y-5 overflow-y-auto p-4 pb-24 sm:p-6 xl:pb-8">
+            <SectionCard title="网站设置" sectionId="site" activeSection={activeSection}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="网站名称" value={content.site.name} onChange={(value) => setPath(["site", "name"], value)} />
                 <Field label="职业描述" value={content.site.role} onChange={(value) => setPath(["site", "role"], value)} />
                 <Field label="页脚左侧" value={content.site.footerLeft} onChange={(value) => setPath(["site", "footerLeft"], value)} />
                 <Field label="页脚右侧" value={content.site.footerRight} onChange={(value) => setPath(["site", "footerRight"], value)} />
               </div>
+              <div className="admin-subtle-panel mt-4 rounded-2xl border p-4">
+                <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+                  <Field
+                    label="简历 PDF 下载链接"
+                    value={content.site.resumeUrl}
+                    onChange={(value) => {
+                      setPath(["site", "resumeUrl"], value);
+                      setPath(["hero", "resumeUrl"], value);
+                    }}
+                    placeholder="/Jason-Qiu-Resume.pdf"
+                  />
+                  <ResumeUploadButton
+                    disabled={Boolean(uploadingKey)}
+                    uploading={uploadingKey === "resume-pdf"}
+                    onUpload={uploadResumePdf}
+                  />
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+                  <span>上传 PDF 后请点击“保存到线上”，访客下载按钮会使用这里的链接。</span>
+                  {content.site.resumeUrl && (
+                    <a
+                      href={content.site.resumeUrl}
+                      target="_blank"
+                      className="admin-secondary-button inline-flex items-center gap-1 rounded-full border px-3 py-1 font-medium text-zinc-800"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      打开当前文件
+                    </a>
+                  )}
+                </div>
+              </div>
             </SectionCard>
 
-            <SectionCard title="首页首屏">
+            <SectionCard title="首页首屏" sectionId="hero" activeSection={activeSection}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="小标题" value={content.hero.eyebrow} onChange={(value) => setPath(["hero", "eyebrow"], value)} />
                 <Field label="大标题" value={content.hero.title} onChange={(value) => setPath(["hero", "title"], value)} />
@@ -554,14 +764,14 @@ export default function AdminPage() {
               </div>
             </SectionCard>
 
-            <SectionCard title="作品区">
+            <SectionCard title="作品区标题" sectionId="works" activeSection={activeSection}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="小标题" value={content.worksSection.eyebrow} onChange={(value) => setPath(["worksSection", "eyebrow"], value)} />
                 <Field label="大标题" value={content.worksSection.title} onChange={(value) => setPath(["worksSection", "title"], value)} />
               </div>
             </SectionCard>
 
-            <SectionCard title="关于我">
+            <SectionCard title="关于我" sectionId="about" activeSection={activeSection}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="小标题" value={content.about.eyebrow} onChange={(value) => setPath(["about", "eyebrow"], value)} />
                 <Field label="标题" value={content.about.title} onChange={(value) => setPath(["about", "title"], value)} />
@@ -572,7 +782,7 @@ export default function AdminPage() {
               </div>
             </SectionCard>
 
-            <SectionCard title="联系方式">
+            <SectionCard title="联系方式" sectionId="contact" activeSection={activeSection}>
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="标题" value={content.contact.title} onChange={(value) => setPath(["contact", "title"], value)} />
                 <Field label="邮箱" value={content.contact.email} onChange={(value) => setPath(["contact", "email"], value)} />
@@ -583,16 +793,37 @@ export default function AdminPage() {
 
             <SectionCard
               title="作品列表"
+              sectionId="works"
+              activeSection={activeSection}
               action={
-                <button onClick={addWork} className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-medium text-white">
+                <button onClick={addWork} className="admin-primary-button inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium active:scale-[0.98]">
                   <Plus className="h-4 w-4" />
                   新增作品
                 </button>
               }
             >
+              <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+                {content.works.map((work, index) => (
+                  <button
+                    key={`${work.slug}-tab-${index}`}
+                    type="button"
+                    onClick={() => setSelectedWorkIndex(index)}
+                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition ${
+                      selectedWorkIndex === index
+                        ? "admin-section-tab-active text-white"
+                        : "admin-secondary-button border text-zinc-600"
+                    }`}
+                  >
+                    {index + 1}. {work.title || "未命名作品"}
+                  </button>
+                ))}
+              </div>
               <div className="space-y-5">
                 {content.works.map((work, index) => (
-                  <div key={`${work.slug}-${index}`} className="rounded-2xl border border-black/10 bg-zinc-50 p-4">
+                  <div
+                    key={`${work.slug}-${index}`}
+                    className={`${selectedWorkIndex === index ? "block" : "hidden"} admin-subtle-panel rounded-2xl border p-4`}
+                  >
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
                         <h3 className="font-semibold">{work.title || `作品 ${index + 1}`}</h3>
@@ -653,39 +884,72 @@ export default function AdminPage() {
               </div>
             </SectionCard>
           </div>
+          </div>
 
-          <aside className="order-first space-y-4 lg:order-none">
-            <div className="rounded-2xl border border-black/10 bg-white p-4 shadow-soft sm:rounded-3xl sm:p-5 lg:sticky lg:top-20">
-              <h2 className="text-lg font-semibold">线上保存</h2>
-              <p className="mt-2 text-sm leading-6 text-zinc-600">
-                后台密码来自 Netlify 环境变量 ADMIN_PASSWORD。上传图片或保存内容都需要这个密码。
-              </p>
+          <aside className={`${mobilePane === "edit" ? "hidden" : "flex"} min-h-[620px] flex-col gap-3 xl:flex xl:h-full xl:min-h-0`}>
+            <div className="admin-preview-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-white">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-white/55" />
+                  <span className="text-sm font-medium">实时网站预览 · 1:1</span>
+                </div>
+                <Link href="/" target="_blank" className="inline-flex items-center gap-1 text-xs text-white/60 transition hover:text-white">
+                  新窗口打开 <ExternalLink className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="h-[calc(100dvh-210px)] min-h-[520px] flex-1 bg-white xl:h-auto xl:min-h-0">
+                <iframe
+                  ref={previewRef}
+                  src="/?admin-preview=1"
+                  title="网站实时预览"
+                  onLoad={() =>
+                    previewRef.current?.contentWindow?.postMessage(
+                      { type: "portfolio-preview-content", content },
+                      "*"
+                    )
+                  }
+                  className="h-full w-full border-0 bg-white xl:h-[200%] xl:w-[200%] xl:origin-top-left xl:scale-50"
+                />
+              </div>
+            </div>
+
+            <div className="admin-publish-card shrink-0 rounded-2xl border p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <Settings2 className="h-4 w-4 text-zinc-500" />
+                <h2 className="text-base font-semibold">发布更改</h2>
+              </div>
               <Field
                 label="后台密码"
                 value={password}
                 onChange={setPassword}
                 placeholder="输入 ADMIN_PASSWORD"
+                type="password"
+                autoComplete="current-password"
               />
-              <div className="mt-4 grid gap-2">
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 <button
                   onClick={saveOnline}
-                  disabled={isSaving || isLoading}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-45"
+                  disabled={isSaving || isLoading || !isDirty}
+                  className="admin-primary-button inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                   {isSaving ? "正在保存..." : "保存到线上"}
                 </button>
-                <button onClick={resetToOnline} className="inline-flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm font-medium">
+                <button onClick={resetToOnline} className="admin-secondary-button inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition active:scale-[0.98]">
                   <RefreshCw className="h-4 w-4" />
                   重新加载线上内容
                 </button>
-                <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-black/10 bg-zinc-50 px-4 py-3 text-center text-sm font-medium">
+                <button onClick={saveDraft} className="admin-secondary-button inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition active:scale-[0.98]">
+                  <Save className="h-4 w-4" />
+                  本机草稿
+                </button>
+                <label className="admin-secondary-button inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-center text-sm font-medium transition active:scale-[0.98]">
                   <FileJson className="h-4 w-4" />
                   导入 JSON
                   <input type="file" accept="application/json" onChange={(event) => importJson(event.target.files?.[0])} className="hidden" />
                 </label>
               </div>
-              <details className="mt-4 lg:open">
+              <details className="mt-2">
                 <summary className="cursor-pointer rounded-xl bg-zinc-100 px-3 py-2 text-sm font-medium text-zinc-700">
                   查看 JSON 预览
                 </summary>
@@ -696,16 +960,37 @@ export default function AdminPage() {
             </div>
           </aside>
         </div>
+
+        <div className="admin-mobile-dock fixed inset-x-3 bottom-3 z-40 grid grid-cols-2 gap-1 rounded-2xl border p-1.5 backdrop-blur-xl xl:hidden">
+          <button
+            type="button"
+            onClick={() => setMobilePane("edit")}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${mobilePane === "edit" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
+          >
+            <Settings2 className="h-4 w-4" />
+            编辑内容
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobilePane("preview")}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${mobilePane === "preview" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
+          >
+            <Eye className="h-4 w-4" />
+            网站预览
+          </button>
+        </div>
       </div>
     </main>
   );
 }
 
-function SectionCard({ title, action, children }) {
+function SectionCard({ title, action, children, sectionId, activeSection }) {
   return (
-    <section className="rounded-2xl border border-black/10 bg-white p-4 shadow-soft sm:rounded-3xl md:p-6">
-      <div className="mb-4 grid gap-3 sm:mb-5 sm:flex sm:items-center sm:justify-between">
-        <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
+    <section
+      className={`${sectionId && sectionId !== activeSection ? "hidden" : "block"}`}
+    >
+      <div className="admin-section-heading mb-5 grid gap-3 border-b pb-4 sm:flex sm:items-center sm:justify-between">
+        <h2 className="text-xl font-semibold tracking-[-0.02em] sm:text-2xl">{title}</h2>
         {action}
       </div>
       {children}
