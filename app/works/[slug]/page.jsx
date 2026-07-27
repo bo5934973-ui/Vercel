@@ -2,6 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import {
+  CaseStudyGallery,
+  CaseStudyNarrative
+} from "@/components/CaseStudyShowcase";
 import { Tag } from "@/components/Tag";
 import { siteContent } from "@/data/siteContent";
 import { getWorkBySlug, works } from "@/data/works";
@@ -72,34 +76,8 @@ export default function CaseStudyPage({ params }) {
         </div>
       </section>
 
-      <section className="px-6 py-20 md:px-20 md:py-28">
-        <div className="mx-auto grid max-w-[1180px] gap-8 md:grid-cols-3">
-          {detailBlocks.map((block) => (
-            <InfoBlock key={block.title} title={block.title}>
-              {block.body}
-            </InfoBlock>
-          ))}
-        </div>
-      </section>
-
-      <section className="px-6 pb-20 md:px-20 md:pb-28">
-        <div className="mx-auto max-w-[1440px] space-y-8">
-          {work.images.map((image, index) => (
-            <div
-              key={`${image}-${index}`}
-              className="relative aspect-[16/9] overflow-hidden rounded-work bg-white shadow-soft"
-            >
-              <Image
-                src={image}
-                alt={`${work.title} 图片 ${index + 1}`}
-                fill
-                sizes="100vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      <CaseStudyNarrative blocks={detailBlocks} />
+      <CaseStudyGallery images={work.images} title={work.title} />
 
       <section className="bg-blackBg px-6 py-20 text-white md:px-20 md:py-28">
         <div className="mx-auto grid max-w-[1180px] gap-10 md:grid-cols-[0.75fr_1fr]">
@@ -138,14 +116,5 @@ export default function CaseStudyPage({ params }) {
         </div>
       </section>
     </main>
-  );
-}
-
-function InfoBlock({ title, children }) {
-  return (
-    <div className="rounded-work border border-black/8 bg-white p-7 shadow-soft">
-      <h2 className="text-2xl font-semibold leading-8">{title}</h2>
-      <p className="mt-4 text-base leading-7 text-textSoft">{children}</p>
-    </div>
   );
 }
