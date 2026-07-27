@@ -1,46 +1,48 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import {
   CaseStudyGallery,
   CaseStudyNarrative
 } from "@/components/CaseStudyShowcase";
 import { Tag } from "@/components/Tag";
-import { siteContent } from "@/data/siteContent";
-import { getWorkBySlug, works } from "@/data/works";
+import { useLiveContent } from "@/components/LiveContentProvider";
 
-export function generateStaticParams() {
-  return works.map((work) => ({ slug: work.slug }));
+export default function LiveWorkPage() {
+  return (
+    <Suspense fallback={<main className="work-page min-h-screen bg-whiteBg" />}>
+      <LiveWorkContent />
+    </Suspense>
+  );
 }
 
-export function generateMetadata({ params }) {
-  const work = getWorkBySlug(params.slug);
-
-  if (!work) {
-    return {
-      title: `作品未找到 - ${siteContent.site.name}`
-    };
-  }
-
-  return {
-    title: `${work.title} - ${siteContent.site.name}`,
-    description: work.description
-  };
-}
-
-export default function CaseStudyPage({ params }) {
-  const work = getWorkBySlug(params.slug);
-  const { caseStudy } = siteContent;
-
-  if (!work) {
-    notFound();
-  }
-
+function LiveWorkContent() {
+  const params = useSearchParams();
+  const slug = params.get("slug");
+  const { content } = useLiveContent();
+  const work = content.works.find((item) => item.slug === slug) || content.works[0];
+  const { caseStudy } = content;
   const detailBlocks = work.caseStudy || caseStudy.infoBlocks;
 
+  if (!work) {
+    return (
+      <main className="work-page min-h-screen bg-whiteBg px-6 pt-28 text-textDark md:px-20">
+        <div className="mx-auto max-w-[900px]">
+          <h1 className="text-4xl font-semibold">作品不存在</h1>
+          <Link href="/#works" className="mt-8 inline-flex rounded-full bg-black px-6 py-3 text-sm font-medium text-white">
+            返回作品列表
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="bg-whiteBg text-textDark">
+    <main className="work-page bg-whiteBg text-textDark">
       <section className="bg-blackBg px-6 pb-20 pt-28 text-white md:px-20 md:pb-28">
         <div className="mx-auto max-w-[1440px]">
           <Link
