@@ -1,41 +1,43 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import {
+  CaseStudyGallery,
+  CaseStudyNarrative
+} from "@/components/CaseStudyShowcase";
 import { Tag } from "@/components/Tag";
-import { useLiveContent } from "@/components/LiveContentProvider";
+import { siteContent } from "@/data/siteContent";
+import { getWorkBySlug, works } from "@/data/works";
 
-export default function LiveWorkPage() {
-  return (
-    <Suspense fallback={<main className="min-h-screen bg-whiteBg" />}>
-      <LiveWorkContent />
-    </Suspense>
-  );
+export function generateStaticParams() {
+  return works.map((work) => ({ slug: work.slug }));
 }
 
-function LiveWorkContent() {
-  const params = useSearchParams();
-  const slug = params.get("slug");
-  const { content } = useLiveContent();
-  const work = content.works.find((item) => item.slug === slug) || content.works[0];
-  const { caseStudy } = content;
-  const detailBlocks = work.caseStudy || caseStudy.infoBlocks;
+export function generateMetadata({ params }) {
+  const work = getWorkBySlug(params.slug);
 
   if (!work) {
-    return (
-      <main className="min-h-screen bg-whiteBg px-6 pt-28 text-textDark md:px-20">
-        <div className="mx-auto max-w-[900px]">
-          <h1 className="text-4xl font-semibold">作品不存在</h1>
-          <Link href="/#works" className="mt-8 inline-flex rounded-full bg-black px-6 py-3 text-sm font-medium text-white">
-            返回作品列表
-          </Link>
-        </div>
-      </main>
-    );
+    return {
+      title: `作品未找到 - ${siteContent.site.name}`
+    };
   }
+
+  return {
+    title: `${work.title} - ${siteContent.site.name}`,
+    description: work.description
+  };
+}
+
+export default function CaseStudyPage({ params }) {
+  const work = getWorkBySlug(params.slug);
+  const { caseStudy } = siteContent;
+
+  if (!work) {
+    notFound();
+  }
+
+  const detailBlocks = work.caseStudy || caseStudy.infoBlocks;
 
   return (
     <main className="bg-whiteBg text-textDark">
@@ -74,34 +76,8 @@ function LiveWorkContent() {
         </div>
       </section>
 
-      <section className="px-6 py-20 md:px-20 md:py-28">
-        <div className="mx-auto grid max-w-[1180px] gap-8 md:grid-cols-3">
-          {detailBlocks.map((block) => (
-            <InfoBlock key={block.title} title={block.title}>
-              {block.body}
-            </InfoBlock>
-          ))}
-        </div>
-      </section>
-
-      <section className="px-6 pb-20 md:px-20 md:pb-28">
-        <div className="mx-auto max-w-[1440px] space-y-8">
-          {work.images.map((image, index) => (
-            <div
-              key={`${image}-${index}`}
-              className="relative aspect-[16/9] overflow-hidden rounded-work bg-white shadow-soft"
-            >
-              <Image
-                src={image}
-                alt={`${work.title} 图片 ${index + 1}`}
-                fill
-                sizes="100vw"
-                className="object-cover"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      <CaseStudyNarrative blocks={detailBlocks} />
+      <CaseStudyGallery images={work.images} title={work.title} />
 
       <section className="bg-blackBg px-6 py-20 text-white md:px-20 md:py-28">
         <div className="mx-auto grid max-w-[1180px] gap-10 md:grid-cols-[0.75fr_1fr]">
@@ -140,14 +116,5 @@ function LiveWorkContent() {
         </div>
       </section>
     </main>
-  );
-}
-
-function InfoBlock({ title, children }) {
-  return (
-    <div className="rounded-work border border-black/8 bg-white p-7 shadow-soft">
-      <h2 className="text-2xl font-semibold leading-8">{title}</h2>
-      <p className="mt-4 text-base leading-7 text-textSoft">{children}</p>
-    </div>
   );
 }
