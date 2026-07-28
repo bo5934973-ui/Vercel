@@ -19,7 +19,7 @@ import {
   X,
   XCircle
 } from "lucide-react";
-import { siteContent } from "@/data/contentFallback";
+import { normalizeSiteContent, siteContent } from "@/data/contentFallback";
 
 const STORAGE_KEY = "jason-portfolio-admin-draft";
 const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
@@ -30,6 +30,7 @@ const EDITOR_SECTIONS = [
   { id: "hero", label: "首页首屏", hint: "标题、简介与按钮" },
   { id: "works", label: "作品管理", hint: "作品内容与图片" },
   { id: "about", label: "关于我", hint: "介绍与技能标签" },
+  { id: "growth", label: "成长历程", hint: "年份、阶段与能力标签" },
   { id: "contact", label: "联系方式", hint: "邮箱与行动按钮" },
   { id: "site", label: "网站设置", hint: "名称、页脚与简历" }
 ];
@@ -307,8 +308,10 @@ function GalleryImageEditor({ images, disabled, uploadingKey, onChange, onUpload
 }
 
 export default function AdminPage() {
-  const [content, setContent] = useState(() => cloneContent(siteContent));
-  const [savedContentJson, setSavedContentJson] = useState(() => JSON.stringify(siteContent));
+  const [content, setContent] = useState(() => normalizeSiteContent(siteContent));
+  const [savedContentJson, setSavedContentJson] = useState(() =>
+    JSON.stringify(normalizeSiteContent(siteContent))
+  );
   const [password, setPassword] = useState("");
   const [notice, setNotice] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -316,6 +319,7 @@ export default function AdminPage() {
   const [uploadingKey, setUploadingKey] = useState("");
   const [activeSection, setActiveSection] = useState("hero");
   const [selectedWorkIndex, setSelectedWorkIndex] = useState(0);
+  const [selectedJourneyIndex, setSelectedJourneyIndex] = useState(0);
   const [mobilePane, setMobilePane] = useState("edit");
   const previewRef = useRef(null);
 
@@ -337,8 +341,9 @@ export default function AdminPage() {
         const response = await fetch(CONTENT_API_URL, { cache: "no-store" });
         const data = await response.json();
         if (isMounted && response.ok && data.content) {
-          setContent(data.content);
-          setSavedContentJson(JSON.stringify(data.content));
+          const normalizedContent = normalizeSiteContent(data.content);
+          setContent(normalizedContent);
+          setSavedContentJson(JSON.stringify(normalizedContent));
           showNotice("已加载线上最新内容。");
           return;
         }
@@ -351,7 +356,7 @@ export default function AdminPage() {
       const saved = window.localStorage.getItem(STORAGE_KEY);
       if (saved && isMounted) {
         try {
-          setContent(JSON.parse(saved));
+          setContent(normalizeSiteContent(JSON.parse(saved)));
           showNotice("线上内容暂时不可用，已加载本机草稿。");
         } catch {
           showNotice("线上内容暂时不可用，已使用内置内容。", "error");
@@ -387,6 +392,12 @@ export default function AdminPage() {
       setSelectedWorkIndex(Math.max(0, content.works.length - 1));
     }
   }, [content.works.length, selectedWorkIndex]);
+
+  useEffect(() => {
+    if (selectedJourneyIndex >= content.growth.items.length) {
+      setSelectedJourneyIndex(Math.max(0, content.growth.items.length - 1));
+    }
+  }, [content.growth.items.length, selectedJourneyIndex]);
 
   const jsonPreview = useMemo(() => JSON.stringify(content, null, 2), [content]);
   const contentJson = useMemo(() => JSON.stringify(content), [content]);
@@ -543,12 +554,16 @@ export default function AdminPage() {
       const response = await fetch(CONTENT_API_URL, { cache: "no-store" });
       const data = await response.json();
       if (!response.ok || !data.content) throw new Error();
-      setContent(data.content);
-      setSavedContentJson(JSON.stringify(data.content));
-      window.localStorage.setItem(LIVE_CONTENT_CACHE_KEY, JSON.stringify(data.content));
+      const normalizedContent = normalizeSiteContent(data.content);
+      setContent(normalizedContent);
+      setSavedContentJson(JSON.stringify(normalizedContent));
+      window.localStorage.setItem(
+        LIVE_CONTENT_CACHE_KEY,
+        JSON.stringify(normalizedContent)
+      );
       showNotice("已恢复为线上最新内容。");
     } catch {
-      setContent(cloneContent(siteContent));
+      setContent(normalizeSiteContent(siteContent));
       showNotice("线上内容暂时不可用，已恢复为内置内容。", "error");
     } finally {
       setIsLoading(false);
@@ -572,7 +587,7 @@ export default function AdminPage() {
       const text = await file.text();
       const importedContent = JSON.parse(text);
       if (!isValidContent(importedContent)) throw new Error("invalid-content");
-      setContent(importedContent);
+      setContent(normalizeSiteContent(importedContent));
       showNotice("已导入内容文件，确认无误后可保存到线上。");
     } catch {
       showNotice("导入失败，请确认文件是正确的 JSON。", "error");
@@ -613,6 +628,58 @@ export default function AdminPage() {
       works: current.works.filter((_, index) => index !== workIndex)
     }));
     showNotice("已删除该作品。保存到线上后才会正式生效。");
+  };
+
+  const addJourneyItem = () => {
+    setContent((current) => {
+      const nextItems = [
+        ...current.growth.items,
+        {
+          year: String(new Date().getFullYear()),
+          chapter: "新阶段",
+          title: "新的成长节点",
+          description: "补充这一阶段的主要经历、能力变化和代表性成果。",
+          focus: ["能力标签"]
+        }
+      ];
+      setSelectedJourneyIndex(nextItems.length - 1);
+      return {
+        ...current,
+        growth: { ...current.growth, items: nextItems }
+      };
+    });
+    showNotice("已新增一段成长历程。");
+  };
+
+  const updateJourneyItem = (journeyIndex, field, value) => {
+    setContent((current) => ({
+      ...current,
+      growth: {
+        ...current.growth,
+        items: current.growth.items.map((item, index) =>
+          index === journeyIndex ? { ...item, [field]: value } : item
+        )
+      }
+    }));
+  };
+
+  const removeJourneyItem = (journeyIndex) => {
+    if (content.growth.items.length <= 1) {
+      showNotice("成长历程至少保留一项。", "error");
+      return;
+    }
+    if (!window.confirm("确定删除这段成长历程吗？保存到线上后才会正式生效。")) {
+      return;
+    }
+    setContent((current) => ({
+      ...current,
+      growth: {
+        ...current.growth,
+        items: current.growth.items.filter((_, index) => index !== journeyIndex)
+      }
+    }));
+    setSelectedJourneyIndex((current) => Math.max(0, current - 1));
+    showNotice("已删除这段成长历程。");
   };
 
   const updateWork = (workIndex, field, value) => {
@@ -684,7 +751,7 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="admin-section-tabs mb-3 flex gap-1 overflow-x-auto rounded-2xl border p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-5">
+        <div className="admin-section-tabs mb-3 flex gap-1 overflow-x-auto rounded-2xl border p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-6">
           {EDITOR_SECTIONS.map((section) => (
             <button
               key={section.id}
@@ -779,6 +846,152 @@ export default function AdminPage() {
               <div className="mt-4 grid gap-4 md:grid-cols-2">
                 <Field label="介绍文字" value={content.about.description} onChange={(value) => setPath(["about", "description"], value)} multiline />
                 <ArrayField label="技能标签（一行一个）" values={content.about.skills} onChange={(value) => setPath(["about", "skills"], value)} />
+              </div>
+            </SectionCard>
+
+            <SectionCard
+              title="成长历程"
+              sectionId="growth"
+              activeSection={activeSection}
+              action={
+                <button
+                  type="button"
+                  onClick={addJourneyItem}
+                  className="admin-primary-button inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium active:scale-[0.98]"
+                >
+                  <Plus className="h-4 w-4" />
+                  新增历程
+                </button>
+              }
+            >
+              <div className="admin-growth-overview mb-5 grid gap-4 rounded-2xl border p-4">
+                <div>
+                  <p className="text-xs font-semibold tracking-[0.08em] text-[#0071e3]">
+                    前台模块文案
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-zinc-500">
+                    下方内容会同步到首页的成长历程模块，右侧预览会即时更新。
+                  </p>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <Field
+                    label="顶部小标题"
+                    value={content.growth.eyebrow}
+                    onChange={(value) => setPath(["growth", "eyebrow"], value)}
+                  />
+                  <Field
+                    label="主标题"
+                    value={content.growth.title}
+                    onChange={(value) => setPath(["growth", "title"], value)}
+                  />
+                  <Field
+                    label="强调标题"
+                    value={content.growth.highlight}
+                    onChange={(value) => setPath(["growth", "highlight"], value)}
+                  />
+                  <Field
+                    label="统计标签"
+                    value={content.growth.summaryLabel}
+                    onChange={(value) => setPath(["growth", "summaryLabel"], value)}
+                  />
+                </div>
+                <Field
+                  label="模块说明"
+                  value={content.growth.description}
+                  onChange={(value) => setPath(["growth", "description"], value)}
+                  multiline
+                />
+                <Field
+                  label="统计说明"
+                  value={content.growth.summaryText}
+                  onChange={(value) => setPath(["growth", "summaryText"], value)}
+                />
+              </div>
+
+              <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+                {content.growth.items.map((item, index) => (
+                  <button
+                    key={`journey-tab-${index}`}
+                    type="button"
+                    onClick={() => setSelectedJourneyIndex(index)}
+                    aria-pressed={selectedJourneyIndex === index}
+                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium transition ${
+                      selectedJourneyIndex === index
+                        ? "admin-section-tab-active text-white"
+                        : "admin-secondary-button border text-zinc-600"
+                    }`}
+                  >
+                    {String(index + 1).padStart(2, "0")} · {item.year || "未填写年份"}
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-4">
+                {content.growth.items.map((item, index) => (
+                  <div
+                    key={`journey-editor-${index}`}
+                    className={`${
+                      selectedJourneyIndex === index ? "block" : "hidden"
+                    } admin-growth-item rounded-2xl border p-4`}
+                  >
+                    <div className="mb-4 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold tracking-[0.08em] text-[#0071e3]">
+                          阶段 {String(index + 1).padStart(2, "0")}
+                        </p>
+                        <h3 className="mt-1 text-lg font-semibold">
+                          {item.title || "未命名成长节点"}
+                        </h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeJourneyItem(index)}
+                        disabled={content.growth.items.length <= 1}
+                        className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white px-3 py-1.5 text-sm text-red-600 transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-35"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        删除
+                      </button>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Field
+                        label="年份"
+                        value={item.year}
+                        onChange={(value) => updateJourneyItem(index, "year", value)}
+                      />
+                      <Field
+                        label="阶段名称"
+                        value={item.chapter}
+                        onChange={(value) => updateJourneyItem(index, "chapter", value)}
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <Field
+                        label="阶段标题"
+                        value={item.title}
+                        onChange={(value) => updateJourneyItem(index, "title", value)}
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <Field
+                        label="阶段说明"
+                        value={item.description}
+                        onChange={(value) =>
+                          updateJourneyItem(index, "description", value)
+                        }
+                        multiline
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <ArrayField
+                        label="能力标签（一行一个）"
+                        values={item.focus}
+                        onChange={(value) => updateJourneyItem(index, "focus", value)}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </SectionCard>
 
