@@ -7,35 +7,12 @@ import {
   useReducedMotion,
   useSpring
 } from "framer-motion";
-
-const careerJourney = [
-  {
-    year: "2024",
-    chapter: "基础建立",
-    title: "商业视觉与品牌表达",
-    description:
-      "从品牌与电商视觉出发，持续训练版式、字体、色彩与画面质感，把审美判断转化为稳定、可执行的设计方法。",
-    focus: ["品牌视觉", "电商设计", "版式系统"]
-  },
-  {
-    year: "2025",
-    chapter: "产品深入",
-    title: "产品视觉与智能硬件",
-    description:
-      "聚焦智能穿戴与产品渲染，让功能卖点、材质细节和使用体验形成一致的视觉叙事，服务产品发布与商业沟通。",
-    focus: ["智能硬件", "产品渲染", "发布视觉"]
-  },
-  {
-    year: "2026",
-    chapter: "能力拓展",
-    title: "AI 驱动的跨媒介设计",
-    description:
-      "将 AI 工作流融入创意探索、界面设计与三维表达，建立从概念、视觉方向到最终交付的完整设计系统。",
-    focus: ["AI 工作流", "UI / UX", "视觉系统"]
-  }
-];
+import { useLiveContent } from "@/components/LiveContentProvider";
 
 export function AboutPlan1() {
+  const { content } = useLiveContent();
+  const growth = content.growth;
+  const careerJourney = growth.items;
   const [activeIndex, setActiveIndex] = useState(careerJourney.length - 1);
   const tabRefs = useRef([]);
   const reduceMotion = useReducedMotion();
@@ -43,6 +20,10 @@ export function AboutPlan1() {
   const pointerY = useMotionValue(240);
   const ambientX = useSpring(pointerX, { stiffness: 72, damping: 26, mass: 0.8 });
   const ambientY = useSpring(pointerY, { stiffness: 72, damping: 26, mass: 0.8 });
+
+  useEffect(() => {
+    setActiveIndex((current) => Math.min(current, careerJourney.length - 1));
+  }, [careerJourney.length]);
 
   useEffect(() => {
     const section = document.querySelector("#about");
@@ -123,23 +104,25 @@ export function AboutPlan1() {
 
       <div className="career-shell mx-auto grid max-w-[1440px] gap-16 xl:grid-cols-[0.86fr_1.14fr] xl:gap-20">
         <header className="career-heading xl:pt-2">
-          <p className="career-kicker">Work history / 2024 / 2026</p>
+          <p className="career-kicker">{growth.eyebrow}</p>
           <h2
             id="career-title"
             className="mt-7 max-w-xl text-5xl font-semibold leading-[1.02] tracking-[-0.05em] md:text-[60px]"
           >
-            工作不是重复，
-            <span className="block text-white/36">而是持续升级。</span>
+            {growth.title}
+            <span className="block text-white/36">{growth.highlight}</span>
           </h2>
           <p className="mt-8 max-w-md text-base leading-7 text-white/52 md:text-lg md:leading-8">
-            从商业视觉、产品叙事到 AI 协作，三段历程构成一条不断扩展的设计能力路径。
+            {growth.description}
           </p>
 
           <div className="career-summary mt-14" aria-hidden="true">
-            <span className="career-summary-number">03</span>
+            <span className="career-summary-number">
+              {String(careerJourney.length).padStart(2, "0")}
+            </span>
             <span className="career-summary-copy">
-              Years
-              <small>持续进化中</small>
+              {growth.summaryLabel}
+              <small>{growth.summaryText}</small>
             </span>
           </div>
         </header>
