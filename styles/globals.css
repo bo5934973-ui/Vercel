@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
-  background: #050505;
+  color-scheme: light;
+  background: #ffffff;
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -16,21 +16,21 @@
 
 html {
   scroll-behavior: smooth;
-  background: #050505;
+  background: #ffffff;
 }
 
 body {
   margin: 0;
   min-height: 100dvh;
   overflow-x: hidden;
-  background: #050505;
+  background: #ffffff;
   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
     "Helvetica Neue", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
 }
 
 ::selection {
-  background: rgba(221, 235, 255, 0.36);
-  color: #ffffff;
+  background: rgba(58, 89, 255, 0.18);
+  color: #17171a;
 }
 
 img {
@@ -46,11 +46,394 @@ button {
   font: inherit;
 }
 
+.career-section {
+  --career-accent: #8eb8ff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 8% 92%, rgb(72 117 196 / 0.16), transparent 31%),
+    #0c0f14;
+}
+
+.career-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to right, black, transparent 62%);
+}
+
+.career-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--career-accent), rgb(142 184 255 / 0.18) 38%, transparent 78%);
+}
+
+.career-pointer-light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(98 146 226 / 0.12), transparent 68%);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.career-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.career-heading,
+.career-map {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.career-map {
+  transition-delay: 120ms;
+}
+
+.career-section[data-visible="true"] .career-heading,
+.career-section[data-visible="true"] .career-map {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.career-kicker {
+  color: var(--career-accent);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.career-summary {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.career-summary-number {
+  color: var(--career-accent);
+  font-size: clamp(4.5rem, 8vw, 7.5rem);
+  font-weight: 650;
+  line-height: 0.76;
+  letter-spacing: -0.08em;
+}
+
+.career-summary-copy {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 3px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.career-summary-copy small {
+  color: rgb(255 255 255 / 0.32);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+.career-map {
+  border-top: 1px solid rgb(255 255 255 / 0.16);
+}
+
+.career-record {
+  position: relative;
+  isolation: isolate;
+  border-bottom: 1px solid rgb(255 255 255 / 0.16);
+  transition: border-color 320ms ease;
+}
+
+.career-record-active-surface {
+  position: absolute;
+  inset: -1px 0;
+  z-index: 0;
+  border-left: 2px solid var(--career-accent);
+  background: linear-gradient(90deg, rgb(142 184 255 / 0.11), transparent 84%);
+  pointer-events: none;
+}
+
+.career-record-trigger {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 48px minmax(96px, 0.42fr) minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 18px;
+  border: 0;
+  background: transparent;
+  padding: 30px 24px;
+  color: rgb(255 255 255 / 0.46);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    color 260ms ease,
+    transform 200ms ease;
+}
+
+.career-record-trigger:hover {
+  color: rgb(255 255 255 / 0.84);
+}
+
+.career-record-trigger:active {
+  transform: translateY(1px);
+}
+
+.career-record-trigger:focus-visible {
+  outline: 2px solid var(--career-accent);
+  outline-offset: -2px;
+}
+
+.career-record[data-active="true"] .career-record-trigger {
+  color: #ffffff;
+}
+
+.career-record-index {
+  color: rgb(255 255 255 / 0.26);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+
+.career-record-year {
+  font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+  font-weight: 620;
+  line-height: 0.9;
+  letter-spacing: -0.065em;
+}
+
+.career-record-heading {
+  display: grid;
+  gap: 8px;
+}
+
+.career-record-heading small {
+  color: var(--career-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.career-record-heading strong {
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  font-weight: 560;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.career-record-toggle {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  justify-self: end;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 50%;
+  transition:
+    border-color 260ms ease,
+    background 260ms ease;
+}
+
+.career-record-toggle span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.career-record-toggle span:last-child {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.career-record[data-active="true"] .career-record-toggle {
+  border-color: var(--career-accent);
+  background: var(--career-accent);
+  color: #0c0f14;
+}
+
+.career-record[data-active="true"] .career-record-toggle span:last-child {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.career-record-panel {
+  display: grid;
+  grid-template-columns: 48px minmax(96px, 0.42fr) minmax(0, 1fr) 36px;
+  gap: 18px;
+  padding: 0 24px 34px;
+}
+
+.career-panel-motion {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.career-record-panel > p {
+  grid-column: 3 / 5;
+  max-width: 620px;
+  margin: 0;
+  color: rgb(255 255 255 / 0.56);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.career-focuses {
+  display: flex;
+  grid-column: 3 / 5;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 4px;
+}
+
+.career-focuses span {
+  position: relative;
+  color: rgb(255 255 255 / 0.78);
+  font-size: 12px;
+  font-weight: 540;
+}
+
+.career-focuses span + span {
+  padding-left: 18px;
+}
+
+.career-focuses span + span::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--career-accent);
+  transform: translateY(-50%);
+}
+
+@media (max-width: 767px) {
+  .career-pointer-light {
+    display: none;
+  }
+
+  .career-section::before {
+    background-size: 48px 48px;
+  }
+
+  .career-record-trigger {
+    grid-template-columns: 30px 82px minmax(0, 1fr) 30px;
+    gap: 10px;
+    padding: 24px 10px;
+  }
+
+  .career-record-year {
+    font-size: 2rem;
+  }
+
+  .career-record-heading {
+    gap: 5px;
+  }
+
+  .career-record-heading strong {
+    font-size: 14px;
+  }
+
+  .career-record-toggle {
+    width: 26px;
+    height: 26px;
+  }
+
+  .career-record-panel {
+    display: block;
+    padding: 0 10px 28px 122px;
+  }
+
+  .career-record-panel > p {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .career-focuses {
+    margin-top: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .career-heading,
+  .career-map,
+  .career-record,
+  .career-record-trigger,
+  .career-record-toggle,
+  .career-record-toggle span {
+    transition: none;
+  }
+
+  .career-pointer-light {
+    display: none;
+  }
+}
+
 body:has(.portfolio-admin-page) #jason-ai-assistant,
 body:has(.hero-preview-page) #jason-ai-assistant,
 body:has(.work-page) #jason-ai-assistant,
-body:has(.apple-hero) #jason-ai-assistant {
+body:has(.apple-hero) #jason-ai-assistant,
+body:has(.portfolio-hero) #jason-ai-assistant {
   display: none !important;
+}
+
+.portfolio-hero {
+  isolation: isolate;
+}
+
+.portfolio-hero-wash {
+  background:
+    radial-gradient(circle at 75% 48%, rgb(88 102 255 / 0.07), transparent 28%),
+    linear-gradient(180deg, rgb(248 249 255 / 0.5), transparent 38%);
+}
+
+.portfolio-hero-glow,
+.portfolio-hero-orbit {
+  position: absolute;
+  inset: 11%;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.portfolio-hero-glow {
+  background: radial-gradient(circle, rgb(73 87 255 / 0.1), rgb(73 87 255 / 0.025) 45%, transparent 70%);
+  filter: blur(24px);
+}
+
+.portfolio-hero-orbit {
+  inset: 14%;
+  border: 1px solid rgb(75 85 188 / 0.08);
+  box-shadow:
+    0 0 0 40px rgb(75 85 188 / 0.018),
+    0 0 0 80px rgb(75 85 188 / 0.012);
 }
 
 .glass-panel {
@@ -1291,7 +1674,7 @@ body:has(.apple-hero) #jason-ai-assistant {
   .agent-core-loading { animation: none; }
 }
 
-/* Static Design Core: generated product asset with lightweight DOM motion. */
+/* 3D cube core: generated optical render with restrained spatial motion. */
 .agent-core-stage {
   isolation: isolate;
   min-width: 0;
@@ -1302,7 +1685,7 @@ body:has(.apple-hero) #jason-ai-assistant {
   display: none;
 }
 
-.agent-core-static,
+.agent-core-system,
 .agent-core-loading {
   position: absolute;
   inset: 0;
@@ -1310,18 +1693,97 @@ body:has(.apple-hero) #jason-ai-assistant {
   border-radius: 40px;
 }
 
-.agent-core-static {
+.agent-core-system {
   perspective: 1100px;
   opacity: 0;
   transform: translateY(12px);
-  animation: agent-core-static-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) 100ms forwards;
+  animation: agent-core-system-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) 100ms forwards;
 }
 
-.agent-core-static-parallax {
+.agent-core-system--webgl {
+  overflow: hidden;
+  background: radial-gradient(circle at 53% 46%, rgb(210 228 255 / 0.18), transparent 52%);
+}
+
+.agent-core-system--webgl .agent-core-canvas {
+  inset: 2% 4% 5% 7%;
+  z-index: 2;
+  clip-path: none;
+  border-radius: 36px;
+}
+
+.agent-core-system--webgl .agent-core-vignette {
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(248 248 250 / 0.82), transparent 14%, transparent 88%, rgb(248 248 250 / 0.48)),
+    linear-gradient(0deg, rgb(248 248 250 / 0.48), transparent 18%);
+}
+
+/* Hero sculpture: one strong silhouette with restrained spatial motion. */
+.agent-core-system--sculpture {
+  overflow: visible;
+  background: transparent;
+}
+
+.agent-core-aura {
+  position: absolute;
+  inset: 14% 5% 8% 8%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 58% 46%, rgb(64 125 236 / 0.14), transparent 39%),
+    radial-gradient(circle, rgb(255 255 255 / 0.96), transparent 68%);
+  filter: blur(20px);
+}
+
+.agent-core-sculpture {
+  position: absolute;
+  inset: -2% -8% -3% -5%;
+  display: grid;
+  place-items: center;
+  transform-origin: 52% 56%;
+  animation: agent-core-sculpture-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.agent-core-sculpture img {
+  display: block;
+  width: 108%;
+  max-width: none;
+  height: 108%;
+  object-fit: contain;
+  filter:
+    saturate(0.98)
+    contrast(1.035)
+    drop-shadow(0 30px 36px rgb(28 74 160 / 0.13));
+}
+
+.agent-core-ground {
+  position: absolute;
+  left: 21%;
+  right: 8%;
+  bottom: 8%;
+  height: 7%;
+  border-radius: 50%;
+  background: rgb(45 87 158 / 0.11);
+  filter: blur(26px);
+  animation: agent-core-ground-breathe 7s ease-in-out infinite;
+}
+
+@keyframes agent-core-sculpture-float {
+  0%, 100% { transform: translate3d(0, 5px, 0) rotate(-0.7deg) scale(1); }
+  50% { transform: translate3d(0, -8px, 0) rotate(0.55deg) scale(1.012); }
+}
+
+@keyframes agent-core-ground-breathe {
+  0%, 100% { opacity: 0.78; transform: scaleX(1); }
+  50% { opacity: 0.5; transform: scaleX(0.92); }
+}
+
+.agent-core-system-parallax {
   --core-rotate-x: 0deg;
   --core-rotate-y: 0deg;
   position: absolute;
-  inset: 2% 1% 8%;
+  inset: -1% -3% 6%;
   z-index: 2;
   transform: rotateX(var(--core-rotate-x)) rotateY(var(--core-rotate-y));
   transform-style: preserve-3d;
@@ -1329,129 +1791,123 @@ body:has(.apple-hero) #jason-ai-assistant {
   will-change: transform;
 }
 
-.agent-core-static-float {
+.agent-core-system-float {
   position: absolute;
   inset: 0;
-  animation: agent-core-static-float 5.8s ease-in-out infinite;
+  animation: agent-core-system-float 6.8s ease-in-out infinite;
   will-change: transform;
 }
 
-.agent-core-static-spin {
+.agent-core-system-object {
   position: absolute;
   inset: 0;
+  z-index: 2;
   transform-origin: 50% 50%;
-  animation: agent-core-static-spin 26s linear infinite;
+  transform-style: preserve-3d;
+  animation: agent-core-system-rotate 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
   will-change: transform;
 }
 
-.agent-core-static-label-orbit {
+.agent-core-system-atmosphere {
   position: absolute;
-  inset: 0;
-  z-index: 3;
-  transform-origin: 50% 50%;
-  animation: agent-core-static-spin 26s linear infinite;
-  will-change: transform;
+  left: 13%;
+  top: 18%;
+  z-index: 1;
+  width: 76%;
+  height: 64%;
+  border-radius: 46%;
+  background: radial-gradient(ellipse, rgb(64 136 235 / 0.09), rgb(202 226 255 / 0.032) 44%, transparent 72%);
+  filter: blur(14px);
+  pointer-events: none;
 }
 
-.agent-core-static-image {
+.agent-core-system-image {
   object-fit: contain;
-  transform: scale(1.04);
-  filter: saturate(0.94) contrast(1.03);
+  transform: scale(0.91);
+  filter: saturate(0.84) contrast(1.01) brightness(1.01) drop-shadow(0 30px 38px rgb(46 91 157 / 0.12));
 }
 
-.agent-core-static-shadow {
+.agent-core-system-shadow {
   position: absolute;
   left: 27%;
-  bottom: 12.5%;
+  bottom: 11.5%;
   z-index: 1;
-  width: 46%;
-  height: 4.2%;
+  width: 48%;
+  height: 4%;
   border-radius: 50%;
-  background: rgb(54 84 116 / 0.19);
-  filter: blur(15px);
-  animation: agent-core-static-shadow 5.8s ease-in-out infinite;
+  background: rgb(48 85 137 / 0.13);
+  filter: blur(22px);
+  animation: agent-core-system-shadow 6.8s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
-.agent-core-static-label {
-  position: absolute;
-  color: rgb(95 103 116 / 0.48);
-  font-family: "SF Pro Text", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  pointer-events: none;
-  animation: agent-core-static-label-upright 26s linear infinite;
-  will-change: transform;
-}
-
-.agent-core-static-label--top-left { left: 10%; top: 24%; }
-.agent-core-static-label--top-right { right: 5%; top: 31%; }
-.agent-core-static-label--bottom-right { right: 4%; bottom: 27%; }
-.agent-core-static-label--bottom-left { left: 13%; bottom: 23%; }
-
-@keyframes agent-core-static-enter {
+@keyframes agent-core-system-enter {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes agent-core-static-float {
+@keyframes agent-core-system-float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
 }
 
-@keyframes agent-core-static-spin {
-  to { transform: rotate(360deg); }
+@keyframes agent-core-system-rotate {
+  0% { transform: rotateZ(-3deg) rotateY(-3.5deg) translate3d(-3px, 3px, 0) scale(0.995); }
+  100% { transform: rotateZ(2.5deg) rotateY(3.5deg) translate3d(4px, -3px, 0) scale(1.012); }
 }
 
-@keyframes agent-core-static-label-upright {
-  to { transform: rotate(-360deg); }
-}
-
-@keyframes agent-core-static-shadow {
+@keyframes agent-core-system-shadow {
   0%, 100% { opacity: 0.82; transform: scaleX(1); }
   50% { opacity: 0.56; transform: scaleX(0.92); }
 }
 
 @media (max-width: 767px) {
-  .agent-core-static,
+  .agent-core-system,
   .agent-core-loading { border-radius: 28px; }
 
-  .agent-core-static-parallax {
-    inset: 0 -4% 8%;
+  .agent-core-system-parallax {
+    inset: 0 -8% 7%;
     transform: none;
     transition: none;
     will-change: auto;
   }
 
-  .agent-core-static-spin,
-  .agent-core-static-label-orbit,
-  .agent-core-static-label { animation-duration: 32s; }
+  .agent-core-system-image { transform: scale(0.94); }
 
-  .agent-core-static-label { font-size: 10px; }
-  .agent-core-static-label--top-left { left: 5%; top: 23%; }
-  .agent-core-static-label--top-right { right: 2%; top: 29%; }
-  .agent-core-static-label--bottom-right { right: 1%; bottom: 27%; }
-  .agent-core-static-label--bottom-left { left: 7%; bottom: 22%; }
+  .agent-core-system--webgl .agent-core-canvas {
+    inset: 1% -1% 5%;
+  }
+
+  .agent-core-sculpture {
+    inset: -3% -18% 0 -18%;
+  }
+
+  .agent-core-sculpture img {
+    width: 118%;
+    height: 118%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .agent-core-static {
+  .agent-core-system {
     opacity: 1;
     transform: none;
     animation: none;
   }
 
-  .agent-core-static-parallax,
-  .agent-core-static-float,
-  .agent-core-static-spin,
-  .agent-core-static-label-orbit,
-  .agent-core-static-label,
-  .agent-core-static-shadow {
+  .agent-core-system-parallax,
+  .agent-core-system-float,
+  .agent-core-system-object,
+  .agent-core-system-shadow {
     transform: none;
     animation: none;
     transition: none;
+    will-change: auto;
+  }
+
+  .agent-core-sculpture,
+  .agent-core-ground {
+    transform: none;
+    animation: none;
     will-change: auto;
   }
 }
