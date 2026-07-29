@@ -24,7 +24,7 @@ import { normalizeSiteContent, siteContent } from "@/data/contentFallback";
 const STORAGE_KEY = "jason-portfolio-admin-draft";
 const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
 const CONTENT_API_URL = process.env.NEXT_PUBLIC_CONTENT_API_URL || "/api/content";
-const MEDIA_API_URL = process.env.NEXT_PUBLIC_MEDIA_API_URL || "/api/media";
+const MEDIA_API_URL = "/api/media";
 
 const EDITOR_SECTIONS = [
   { id: "hero", label: "首页首屏", hint: "标题、简介与按钮" },
@@ -999,6 +999,8 @@ export default function AdminPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <Field label="标题" value={content.contact.title} onChange={(value) => setPath(["contact", "title"], value)} />
                 <Field label="邮箱" value={content.contact.email} onChange={(value) => setPath(["contact", "email"], value)} />
+                <Field label="电话号码" value={content.contact.phone} onChange={(value) => setPath(["contact", "phone"], value)} />
+                <Field label="微信号" value={content.contact.wechat} onChange={(value) => setPath(["contact", "wechat"], value)} />
                 <Field label="按钮文字" value={content.contact.buttonText} onChange={(value) => setPath(["contact", "buttonText"], value)} />
                 <Field label="说明文字" value={content.contact.description} onChange={(value) => setPath(["contact", "description"], value)} />
               </div>
