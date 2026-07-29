@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const MAX_FILE_SIZE = 6 * 1024 * 1024;
+const MAX_FILE_SIZE = 12 * 1024 * 1024;
 
 function json(body, init = {}) {
   return NextResponse.json(body, {
@@ -16,7 +16,7 @@ function json(body, init = {}) {
   });
 }
 
-function sanitizeName(name = "image") {
+function sanitizeName(name = "media") {
   const clean = name
     .toLowerCase()
     .replace(/\.[a-z0-9]+$/i, "")
@@ -24,7 +24,7 @@ function sanitizeName(name = "image") {
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 
-  return clean || "image";
+  return clean || "media";
 }
 
 function extensionFor(type) {
@@ -33,7 +33,8 @@ function extensionFor(type) {
     "image/png": "png",
     "image/webp": "webp",
     "image/gif": "gif",
-    "image/svg+xml": "svg"
+    "image/svg+xml": "svg",
+    "application/pdf": "pdf"
   }[type];
 }
 
@@ -57,14 +58,14 @@ export async function POST(request) {
   const contentType = String(body.contentType || "");
   const ext = extensionFor(contentType);
   if (!ext) {
-    return json({ error: "只支持 JPG、PNG、WebP、GIF、SVG 图片。" }, { status: 400 });
+    return json({ error: "Only JPG, PNG, WebP, GIF, SVG images and PDF files are supported." }, { status: 400 });
   }
 
   const base64 = String(body.data || "").replace(/^data:[^;]+;base64,/, "");
   const buffer = Buffer.from(base64, "base64");
-  if (!buffer.length) return json({ error: "图片内容为空。" }, { status: 400 });
+  if (!buffer.length) return json({ error: "File content is empty." }, { status: 400 });
   if (buffer.length > MAX_FILE_SIZE) {
-    return json({ error: "图片不能超过 6MB。" }, { status: 400 });
+    return json({ error: "File must be smaller than 12MB." }, { status: 400 });
   }
 
   const key = `media/${Date.now()}-${sanitizeName(body.filename)}.${ext}`;
