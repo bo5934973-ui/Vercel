@@ -1,103 +1,83 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight, Download, Sparkles } from "lucide-react";
+import { ArrowDownRight, Mail } from "lucide-react";
+import { PortfolioOrbitVisual } from "@/components/PortfolioOrbitVisual";
 import { useLiveContent } from "@/components/LiveContentProvider";
 
-const AgentCore = dynamic(
-  () => import("@/components/AgentCore").then((module) => module.AgentCore),
-  {
-    ssr: false,
-    loading: () => <div className="agent-core-loading" aria-hidden="true" />
-  }
-);
-
-const SKILLS = [
-  { label: "视觉设计", layer: "design", angle: 0 },
-  { label: "品牌识别", layer: "design", angle: 120 },
-  { label: "视觉策划", layer: "design", angle: 240 },
-  { label: "Figma", layer: "tools", angle: 45 },
-  { label: "Photoshop", layer: "tools", angle: 165 },
-  { label: "Blender", layer: "tools", angle: 285 },
-  { label: "3D 渲染", layer: "fields", angle: 0 },
-  { label: "AI 创意", layer: "fields", angle: 90 },
-  { label: "产品视觉", layer: "fields", angle: 180 },
-  { label: "平面设计", layer: "fields", angle: 270 }
-];
-
 export function Hero() {
-  const { scrollY } = useScroll();
   const reducedMotion = useReducedMotion();
-  const visualY = useTransform(scrollY, [0, 900], [0, reducedMotion ? 0 : 36]);
-  const fade = useTransform(scrollY, [0, 720], [1, 0.86]);
+  const { scrollY } = useScroll();
+  const visualY = useTransform(scrollY, [0, 760], [0, reducedMotion ? 0 : 28]);
   const { content } = useLiveContent();
-  const { hero, site } = content;
-  const resumeUrl = site.resumeUrl || hero.resumeUrl;
+  const { hero, works } = content;
 
   return (
-    <section className="apple-hero relative min-h-[100dvh] overflow-hidden bg-[#f5f5f7] px-5 pb-16 pt-24 text-[#1d1d1f] md:px-10 md:pb-20 md:pt-28">
-      <div className="apple-hero-toplight pointer-events-none absolute inset-x-0 top-0 h-52" />
-      <motion.div style={{ opacity: fade }} className="relative z-10 mx-auto grid min-h-[calc(100dvh-7rem)] max-w-[1440px] items-center gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:gap-0">
-        <div className="relative z-20 max-w-[650px] pb-4 lg:pb-16">
+    <section className="portfolio-hero relative min-h-[100dvh] overflow-hidden bg-white px-5 pb-4 pt-20 text-[#17171a] md:px-10 md:pb-20 md:pt-24">
+      <div className="portfolio-hero-wash pointer-events-none absolute inset-0" />
+
+      <div className="relative mx-auto grid min-h-[calc(100dvh-6rem)] max-w-[1440px] items-center gap-4 lg:grid-cols-[0.88fr_1.12fr] lg:gap-8">
+        <div className="relative z-10 max-w-[650px] py-8 lg:py-0">
           <motion.p
-            initial={false}
+            initial={reducedMotion ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]"
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-5 text-sm font-medium tracking-[-0.01em] text-[#65656b]"
           >
-            <Sparkles className="h-3.5 w-3.5 text-[#6b88b8]" />
-            {hero.eyebrow || "Independent designer"}
+            {hero.eyebrow || "视觉设计师 / AI 创意"}
           </motion.p>
+
           <motion.h1
-            initial={false}
+            initial={reducedMotion ? false : { opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[clamp(4rem,8vw,7.8rem)] font-semibold leading-[0.9] tracking-[-0.075em]"
+            transition={{ duration: 0.72, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-[10ch] text-[clamp(4rem,8vw,7.5rem)] font-semibold leading-[0.9] tracking-[-0.075em]"
           >
             Jason Qiu
           </motion.h1>
+
           <motion.p
-            initial={false}
+            initial={reducedMotion ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-7 max-w-[590px] text-xl font-medium leading-[1.45] tracking-[-0.025em] text-[#424245] md:text-[28px] md:leading-[1.28]"
+            transition={{ duration: 0.65, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-7 max-w-[560px] text-xl font-medium leading-[1.45] tracking-[-0.028em] text-[#44444a] md:text-[27px] md:leading-[1.3]"
           >
-            视觉设计、渲染与品牌表达，专注于平面设计、视觉策划、品牌设计与 AI 创意。
+            以视觉系统、3D 渲染与 AI 工作流，把产品概念转化为清晰、可信的商业表达。
           </motion.p>
+
           <motion.div
-            initial={false}
+            initial={reducedMotion ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-9 flex flex-wrap gap-3"
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-9 flex flex-wrap items-center gap-3"
           >
-            <a href="#works" className="apple-hero-primary inline-flex h-12 items-center gap-2 rounded-full bg-[#1d1d1f] px-6 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-black active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black/20 focus:ring-offset-2">
-              {hero.primaryButton || "查看作品"}
-              <ArrowUpRight className="h-4 w-4" />
+            <a
+              href="#works"
+              className="inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full bg-[#17171a] px-6 text-sm font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#2b2b30] active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#17171a]/25 focus:ring-offset-2"
+            >
+              查看作品
+              <ArrowDownRight className="h-4 w-4" aria-hidden="true" />
             </a>
-            <a href="#contact" className="inline-flex h-12 items-center rounded-full border border-[#d2d2d7] bg-white/60 px-6 text-sm font-semibold text-[#1d1d1f] transition hover:-translate-y-0.5 hover:border-[#86868b] hover:bg-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-black/15 focus:ring-offset-2">
-              {hero.secondaryButton || "联系我"}
+            <a
+              href="#contact"
+              className="inline-flex h-12 items-center gap-2 whitespace-nowrap rounded-full border border-black/10 bg-white px-6 text-sm font-semibold text-[#17171a] shadow-[0_10px_34px_rgba(23,23,26,0.07)] transition duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:shadow-[0_14px_40px_rgba(23,23,26,0.11)] active:translate-y-0 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#17171a]/20 focus:ring-offset-2"
+            >
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              联系我
             </a>
-            {resumeUrl && (
-              <a href={resumeUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-sm font-semibold text-[#6e6e73] transition hover:text-[#1d1d1f]">
-                <Download className="h-4 w-4" />
-                下载简历
-              </a>
-            )}
           </motion.div>
         </div>
 
         <motion.div
-          initial={false}
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.94, y: 18 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.95, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: visualY }}
-          className="agent-core-stage relative mx-auto h-[500px] w-full max-w-[720px] md:h-[620px] lg:h-[720px]"
-          aria-label="设计能力展示"
+          className="relative mx-auto aspect-square w-full max-w-[720px]"
         >
-          <AgentCore />
+          <PortfolioOrbitVisual works={works} />
         </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }
