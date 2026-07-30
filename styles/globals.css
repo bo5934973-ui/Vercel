@@ -132,11 +132,16 @@ button {
 }
 
 .career-summary-number {
+  display: inline-block;
+  min-width: 1.7ch;
   color: var(--career-accent);
   font-size: clamp(4.5rem, 8vw, 7.5rem);
   font-weight: 650;
+  font-variant-numeric: tabular-nums;
   line-height: 0.76;
   letter-spacing: -0.08em;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .career-summary-copy {
@@ -220,10 +225,15 @@ button {
 }
 
 .career-record-year {
+  display: inline-block;
+  min-width: 4.25ch;
   font-size: clamp(2.2rem, 4.5vw, 4.5rem);
   font-weight: 620;
+  font-variant-numeric: tabular-nums;
   line-height: 0.9;
   letter-spacing: -0.065em;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .career-record-heading {
@@ -411,29 +421,332 @@ body:has(.portfolio-hero) #jason-ai-assistant {
 
 .portfolio-hero-wash {
   background:
-    radial-gradient(circle at 75% 48%, rgb(88 102 255 / 0.07), transparent 28%),
+    radial-gradient(circle at 76% 49%, rgb(93 74 196 / 0.065), transparent 29%),
     linear-gradient(180deg, rgb(248 249 255 / 0.5), transparent 38%);
 }
 
-.portfolio-hero-glow,
-.portfolio-hero-orbit {
+.portfolio-orbit-visual {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+  pointer-events: none;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.portfolio-orbit-aura {
   position: absolute;
-  inset: 11%;
+  inset: 12%;
   border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(113 89 224 / 0.12), rgb(113 89 224 / 0.035) 40%, transparent 70%);
+  filter: blur(30px);
   pointer-events: none;
 }
 
-.portfolio-hero-glow {
-  background: radial-gradient(circle, rgb(73 87 255 / 0.1), rgb(73 87 255 / 0.025) 45%, transparent 70%);
-  filter: blur(24px);
+.portfolio-orbit-field {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100%, 720px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
 }
 
-.portfolio-hero-orbit {
-  inset: 14%;
-  border: 1px solid rgb(75 85 188 / 0.08);
+.portfolio-orbit {
+  --orbit-size: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--orbit-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.portfolio-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background:
+    linear-gradient(
+      180deg,
+      rgb(135 103 227 / 0) 0%,
+      rgb(135 103 227 / 0.2) 19%,
+      rgb(112 84 205 / 0.72) 49%,
+      rgb(135 103 227 / 0.18) 79%,
+      rgb(135 103 227 / 0) 100%
+    );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.portfolio-orbit--1 {
+  --orbit-size: 44%;
+}
+
+.portfolio-orbit--2 {
+  --orbit-size: 62%;
+}
+
+.portfolio-orbit--3 {
+  --orbit-size: 81%;
+}
+
+.portfolio-orbit--4 {
+  --orbit-size: 104%;
+}
+
+.portfolio-orbit-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 50%;
+  transform-origin: 50% 0;
+  transform: rotate(var(--node-angle));
+}
+
+.portfolio-orbit-node-keeper {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, 50%) rotate(var(--node-counter-angle));
+  will-change: transform;
+}
+
+.portfolio-orbit-thumbnail {
+  position: relative;
+  display: block;
+  width: 62px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 3px solid rgb(255 255 255 / 0.94);
+  background: #eef0f7;
   box-shadow:
-    0 0 0 40px rgb(75 85 188 / 0.018),
-    0 0 0 80px rgb(75 85 188 / 0.012);
+    0 14px 35px rgb(63 47 118 / 0.2),
+    0 2px 8px rgb(63 47 118 / 0.12);
+  opacity: 0;
+  transform: scale(0.36) rotate(-90deg);
+  filter: blur(7px);
+}
+
+.portfolio-orbit-thumbnail::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.portfolio-orbit-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portfolio-orbit-thumbnail--md {
+  width: 62px;
+}
+
+.portfolio-orbit-thumbnail--lg {
+  width: 76px;
+}
+
+.portfolio-orbit-thumbnail--xl {
+  width: 88px;
+}
+
+.portfolio-orbit-thumbnail--round {
+  border-radius: 50%;
+}
+
+.portfolio-orbit-thumbnail--soft {
+  border-radius: 22px;
+}
+
+.portfolio-orbit-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  perspective: 700px;
+  text-align: center;
+}
+
+.portfolio-orbit-center::before {
+  content: "";
+  position: absolute;
+  inset: -48px -56px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 0.94) 0%, rgb(255 255 255 / 0.78) 48%, transparent 72%);
+  filter: blur(6px);
+}
+
+.portfolio-orbit-center-number {
+  display: block;
+  min-width: 1.65ch;
+  color: #23212b;
+  font-size: clamp(3.6rem, 6vw, 5.15rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.09em;
+  overflow: visible;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+  will-change: transform, opacity;
+}
+
+.portfolio-orbit-center-label {
+  margin-top: 13px;
+  color: #676270;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.22;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portfolio-orbit--normal {
+    animation: portfolio-orbit-spin var(--orbit-duration) linear infinite;
+  }
+
+  .portfolio-orbit--reverse {
+    animation: portfolio-orbit-spin-reverse var(--orbit-duration) linear infinite;
+  }
+
+  .portfolio-orbit-node-keeper--normal {
+    animation: portfolio-orbit-keep-normal var(--orbit-duration) linear infinite;
+  }
+
+  .portfolio-orbit-node-keeper--reverse {
+    animation: portfolio-orbit-keep-reverse var(--orbit-duration) linear infinite;
+  }
+
+  .portfolio-orbit-thumbnail {
+    animation: portfolio-orbit-node-enter 0.9s var(--node-delay) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes portfolio-orbit-spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes portfolio-orbit-spin-reverse {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+
+@keyframes portfolio-orbit-keep-normal {
+  from {
+    transform: translate(-50%, 50%) rotate(var(--node-counter-angle));
+  }
+  to {
+    transform: translate(-50%, 50%) rotate(calc(var(--node-counter-angle) - 360deg));
+  }
+}
+
+@keyframes portfolio-orbit-keep-reverse {
+  from {
+    transform: translate(-50%, 50%) rotate(var(--node-counter-angle));
+  }
+  to {
+    transform: translate(-50%, 50%) rotate(calc(var(--node-counter-angle) + 360deg));
+  }
+}
+
+@keyframes portfolio-orbit-node-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.36) rotate(-90deg);
+    filter: blur(7px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+@media (max-width: 1023px) {
+  .portfolio-orbit-visual {
+    min-height: min(82vw, 660px);
+  }
+
+  .portfolio-orbit-field {
+    width: min(88vw, 650px);
+  }
+}
+
+@media (max-width: 767px) {
+  .portfolio-orbit-field {
+    width: min(112vw, 590px);
+  }
+
+  .portfolio-orbit--4 {
+    --orbit-size: 96%;
+  }
+
+  .portfolio-orbit-thumbnail--md {
+    width: 48px;
+  }
+
+  .portfolio-orbit-thumbnail--lg {
+    width: 58px;
+  }
+
+  .portfolio-orbit-thumbnail--xl {
+    width: 68px;
+  }
+
+  .portfolio-orbit-thumbnail--soft {
+    border-radius: 17px;
+  }
+
+  .portfolio-orbit-center-number {
+    font-size: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-orbit,
+  .portfolio-orbit-node-keeper,
+  .portfolio-orbit-thumbnail {
+    animation: none !important;
+  }
+
+  .portfolio-orbit-thumbnail {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: none;
+  }
 }
 
 .glass-panel {
