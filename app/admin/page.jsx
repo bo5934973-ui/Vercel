@@ -775,7 +775,7 @@ export default function AdminPage() {
         </div>
 
         <div className="grid gap-3 xl:h-[calc(100dvh-166px)] xl:grid-cols-[minmax(420px,560px)_minmax(0,1fr)]">
-          <div className={`${mobilePane === "preview" ? "hidden" : "block"} admin-editor-panel min-h-[520px] overflow-hidden rounded-[24px] border xl:block xl:h-full`}>
+          <div className={`${mobilePane === "edit" ? "block" : "hidden"} admin-editor-panel min-h-[520px] overflow-hidden rounded-[24px] border xl:block xl:h-full`}>
             <div className="h-full space-y-5 overflow-y-auto p-4 pb-24 sm:p-6 xl:pb-8">
             <SectionCard title="网站设置" sectionId="site" activeSection={activeSection}>
               <div className="grid gap-4 md:grid-cols-2">
@@ -1102,7 +1102,7 @@ export default function AdminPage() {
           </div>
 
           <aside className={`${mobilePane === "edit" ? "hidden" : "flex"} min-h-[620px] flex-col gap-3 xl:flex xl:h-full xl:min-h-0`}>
-            <div className="admin-preview-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border">
+            <div className={`${mobilePane === "publish" ? "hidden" : "flex"} admin-preview-card min-h-0 flex-1 flex-col overflow-hidden rounded-[24px] border xl:flex`}>
               <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-white">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-white/55" />
@@ -1128,7 +1128,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="admin-publish-card shrink-0 rounded-2xl border p-3 sm:p-4">
+            <div className={`${mobilePane === "preview" ? "hidden" : "block"} admin-publish-card shrink-0 rounded-2xl border p-3 sm:p-4 xl:block`}>
               <div className="flex items-center gap-2">
                 <Settings2 className="h-4 w-4 text-zinc-500" />
                 <h2 className="text-base font-semibold">发布更改</h2>
@@ -1176,11 +1176,11 @@ export default function AdminPage() {
           </aside>
         </div>
 
-        <div className="admin-mobile-dock fixed inset-x-3 bottom-3 z-40 grid grid-cols-2 gap-1 rounded-2xl border p-1.5 backdrop-blur-xl xl:hidden">
+        <div className="admin-mobile-dock fixed inset-x-3 bottom-3 z-40 grid grid-cols-3 gap-1 rounded-2xl border p-1.5 backdrop-blur-xl xl:hidden">
           <button
             type="button"
             onClick={() => setMobilePane("edit")}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${mobilePane === "edit" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-2 py-3 text-sm font-semibold transition sm:px-4 ${mobilePane === "edit" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
           >
             <Settings2 className="h-4 w-4" />
             编辑内容
@@ -1188,10 +1188,18 @@ export default function AdminPage() {
           <button
             type="button"
             onClick={() => setMobilePane("preview")}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition ${mobilePane === "preview" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-2 py-3 text-sm font-semibold transition sm:px-4 ${mobilePane === "preview" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
           >
             <Eye className="h-4 w-4" />
             网站预览
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobilePane("publish")}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-2 py-3 text-sm font-semibold transition sm:px-4 ${mobilePane === "publish" ? "admin-section-tab-active text-white" : "text-zinc-600"}`}
+          >
+            <Upload className="h-4 w-4" />
+            发布更改
           </button>
         </div>
       </div>
