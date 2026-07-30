@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
+  useInView,
   useMotionValue,
   useReducedMotion,
-  useSpring
+  useSpring,
+  useTransform
 } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,10 +16,50 @@ import { useLiveContent } from "@/components/LiveContentProvider";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
+function AnimatedCareerNumber({ className, value, minDigits, reduceMotion }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, {
+    once: true,
+    margin: "0px 0px -100px 0px"
+  });
+  const normalizedValue = String(value ?? "").trim();
+  const numericValue = Number(normalizedValue);
+  const isNumeric = normalizedValue !== "" && Number.isFinite(numericValue);
+  const digitCount = Math.max(minDigits, normalizedValue.length);
+  const spring = useSpring(0, {
+    stiffness: 160,
+    damping: 24,
+    mass: 0.7
+  });
+  const display = useTransform(spring, (current) =>
+    Math.round(current).toString().padStart(digitCount, "0")
+  );
+  const finalDisplay = isNumeric
+    ? Math.round(numericValue).toString().padStart(digitCount, "0")
+    : normalizedValue;
+
+  useEffect(() => {
+    if (isInView && isNumeric && !reduceMotion) {
+      spring.set(numericValue);
+    }
+  }, [isInView, isNumeric, numericValue, reduceMotion, spring]);
+
+  return (
+    <span ref={ref} className={className} aria-label={finalDisplay}>
+      {reduceMotion || !isNumeric ? (
+        finalDisplay
+      ) : (
+        <motion.span aria-hidden="true">{display}</motion.span>
+      )}
+    </span>
+  );
+}
+
 export function AboutPlan1() {
   const { content } = useLiveContent();
   const growth = content.growth;
   const careerJourney = growth.items;
+  const careerYearKey = careerJourney.map((journey) => journey.year).join("|");
   const [activeIndex, setActiveIndex] = useState(careerJourney.length - 1);
   const sectionRef = useRef(null);
   const tabRefs = useRef([]);
@@ -74,17 +116,11 @@ export function AboutPlan1() {
         },
         ({ conditions }) => {
           const summaryNumber = section.querySelector(".career-summary-number");
-          const yearNumbers = gsap.utils.toArray(".career-record-year");
+          const yearNumbers = gsap.utils.toArray(
+            section.querySelectorAll(".career-record-year")
+          );
 
           if (conditions.reduceMotion) {
-            if (summaryNumber) {
-              summaryNumber.textContent = String(careerJourney.length).padStart(2, "0");
-            }
-
-            yearNumbers.forEach((element) => {
-              element.textContent = element.dataset.year;
-            });
-
             gsap.set([summaryNumber, ...yearNumbers].filter(Boolean), { clearProps: "all" });
             return undefined;
           }
@@ -96,8 +132,6 @@ export function AboutPlan1() {
               end: "top 54%",
               scrub: 0.55
             };
-
-            summaryNumber.textContent = String(careerJourney.length).padStart(2, "0");
 
             gsap.fromTo(
               summaryNumber,
@@ -124,8 +158,6 @@ export function AboutPlan1() {
               end: "center 58%",
               scrub: 0.65
             };
-
-            element.textContent = element.dataset.year;
 
             gsap.fromTo(
               element,
@@ -154,7 +186,7 @@ export function AboutPlan1() {
       return () => media.revert();
     },
     {
-      dependencies: [careerJourney.length],
+      dependencies: [careerJourney.length, careerYearKey],
       scope: sectionRef,
       revertOnUpdate: true
     }
@@ -232,9 +264,12 @@ export function AboutPlan1() {
           </p>
 
           <div className="career-summary mt-14" aria-hidden="true">
-            <span className="career-summary-number">
-              {String(careerJourney.length).padStart(2, "0")}
-            </span>
+            <AnimatedCareerNumber
+              className="career-summary-number"
+              value={careerJourney.length}
+              minDigits={2}
+              reduceMotion={reduceMotion}
+            />
             <span className="career-summary-copy">
               {growth.summaryLabel}
               <small>{growth.summaryText}</small>
@@ -283,9 +318,12 @@ export function AboutPlan1() {
                   <span className="career-record-index">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="career-record-year" data-year={journey.year}>
-                    {journey.year}
-                  </span>
+                  <AnimatedCareerNumber
+                    className="career-record-year"
+                    value={journey.year}
+                    minDigits={4}
+                    reduceMotion={reduceMotion}
+                  />
                   <span className="career-record-heading">
                     <small>{journey.chapter}</small>
                     <strong>{journey.title}</strong>
