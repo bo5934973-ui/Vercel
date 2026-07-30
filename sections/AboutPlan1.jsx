@@ -7,13 +7,19 @@ import {
   useReducedMotion,
   useSpring
 } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { useLiveContent } from "@/components/LiveContentProvider";
+
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export function AboutPlan1() {
   const { content } = useLiveContent();
   const growth = content.growth;
   const careerJourney = growth.items;
   const [activeIndex, setActiveIndex] = useState(careerJourney.length - 1);
+  const sectionRef = useRef(null);
   const tabRefs = useRef([]);
   const reduceMotion = useReducedMotion();
   const pointerX = useMotionValue(-240);
@@ -24,6 +30,13 @@ export function AboutPlan1() {
   useEffect(() => {
     setActiveIndex((current) => Math.min(current, careerJourney.length - 1));
   }, [careerJourney.length]);
+
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+
+    const refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 620);
+    return () => window.clearTimeout(refreshTimer);
+  }, [activeIndex, reduceMotion]);
 
   useEffect(() => {
     const section = document.querySelector("#about");
@@ -45,6 +58,107 @@ export function AboutPlan1() {
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+
+      if (!section) return undefined;
+
+      const media = gsap.matchMedia();
+
+      media.add(
+        {
+          reduceMotion: "(prefers-reduced-motion: reduce)",
+          fullMotion: "(prefers-reduced-motion: no-preference)"
+        },
+        ({ conditions }) => {
+          const summaryNumber = section.querySelector(".career-summary-number");
+          const yearNumbers = gsap.utils.toArray(".career-record-year");
+
+          if (conditions.reduceMotion) {
+            if (summaryNumber) {
+              summaryNumber.textContent = String(careerJourney.length).padStart(2, "0");
+            }
+
+            yearNumbers.forEach((element) => {
+              element.textContent = element.dataset.year;
+            });
+
+            gsap.set([summaryNumber, ...yearNumbers].filter(Boolean), { clearProps: "all" });
+            return undefined;
+          }
+
+          if (summaryNumber) {
+            const summaryRange = {
+              trigger: section,
+              start: "top 84%",
+              end: "top 54%",
+              scrub: 0.55
+            };
+
+            summaryNumber.textContent = String(careerJourney.length).padStart(2, "0");
+
+            gsap.fromTo(
+              summaryNumber,
+              { y: 24, scale: 0.82, rotationX: -32, autoAlpha: 0.28 },
+              {
+                y: 0,
+                scale: 1,
+                rotationX: 0,
+                autoAlpha: 1,
+                ease: "none",
+                scrollTrigger: summaryRange
+              }
+            );
+          }
+
+          yearNumbers.forEach((element) => {
+            const record = element.closest(".career-record");
+
+            if (!record) return;
+
+            const yearRange = {
+              trigger: record,
+              start: "top 88%",
+              end: "center 58%",
+              scrub: 0.65
+            };
+
+            element.textContent = element.dataset.year;
+
+            gsap.fromTo(
+              element,
+              {
+                y: 28,
+                scale: 0.86,
+                rotationX: -34,
+                autoAlpha: 0.2,
+                transformOrigin: "50% 100%"
+              },
+              {
+                y: 0,
+                scale: 1,
+                rotationX: 0,
+                autoAlpha: 1,
+                ease: "none",
+                scrollTrigger: yearRange
+              }
+            );
+          });
+
+          return undefined;
+        }
+      );
+
+      return () => media.revert();
+    },
+    {
+      dependencies: [careerJourney.length],
+      scope: sectionRef,
+      revertOnUpdate: true
+    }
+  );
 
   function selectJourney(index) {
     setActiveIndex(index);
@@ -90,6 +204,7 @@ export function AboutPlan1() {
 
   return (
     <motion.section
+      ref={sectionRef}
       id="about"
       className="career-section px-6 py-24 text-white md:px-20 md:py-32"
       aria-labelledby="career-title"
@@ -168,7 +283,9 @@ export function AboutPlan1() {
                   <span className="career-record-index">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="career-record-year">{journey.year}</span>
+                  <span className="career-record-year" data-year={journey.year}>
+                    {journey.year}
+                  </span>
                   <span className="career-record-heading">
                     <small>{journey.chapter}</small>
                     <strong>{journey.title}</strong>
