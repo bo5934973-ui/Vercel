@@ -4,16 +4,16 @@ import { useEffect, useRef } from "react";
 import { motion, useInView, useSpring, useTransform } from "framer-motion";
 
 const orbitSlots = [
-  { orbit: 1, angle: 270, size: "lg", shape: "soft", delay: "0.45s" },
-  { orbit: 2, angle: 45, size: "md", shape: "round", delay: "0.64s" },
-  { orbit: 2, angle: 180, size: "xl", shape: "round", delay: "0.82s" },
-  { orbit: 2, angle: 300, size: "md", shape: "soft", delay: "1s" },
-  { orbit: 3, angle: 132, size: "xl", shape: "round", delay: "1.18s" },
-  { orbit: 3, angle: 318, size: "md", shape: "soft", delay: "1.34s" },
-  { orbit: 4, angle: 27, size: "md", shape: "round", delay: "1.5s" },
-  { orbit: 4, angle: 96, size: "xl", shape: "soft", delay: "1.66s" },
-  { orbit: 4, angle: 218, size: "xl", shape: "soft", delay: "1.82s" },
-  { orbit: 4, angle: 318, size: "md", shape: "round", delay: "1.98s" }
+  { orbit: 1, angle: 270, mobileAngle: 240, size: "lg", shape: "soft", delay: "0.45s" },
+  { orbit: 2, angle: 45, mobileAngle: 25, size: "md", shape: "round", delay: "0.64s" },
+  { orbit: 2, angle: 180, mobileAngle: 155, size: "xl", shape: "round", delay: "0.82s" },
+  { orbit: 2, angle: 300, mobileAngle: 280, size: "md", shape: "soft", delay: "1s" },
+  { orbit: 3, angle: 132, mobileAngle: 95, size: "xl", shape: "round", delay: "1.18s" },
+  { orbit: 3, angle: 318, mobileAngle: 215, size: "md", shape: "soft", delay: "1.34s" },
+  { orbit: 4, angle: 27, mobileAngle: 0, size: "md", shape: "round", delay: "1.5s" },
+  { orbit: 4, angle: 96, mobileAngle: 0, size: "xl", shape: "soft", delay: "1.66s" },
+  { orbit: 4, angle: 218, mobileAngle: 0, size: "xl", shape: "soft", delay: "1.82s" },
+  { orbit: 4, angle: 318, mobileAngle: 0, size: "md", shape: "round", delay: "1.98s" }
 ];
 
 const orbitMeta = {
@@ -32,6 +32,8 @@ function OrbitNode({ node }) {
       style={{
         "--node-angle": `${node.angle}deg`,
         "--node-counter-angle": `${node.angle * -1}deg`,
+        "--node-mobile-angle": `${node.mobileAngle}deg`,
+        "--node-mobile-counter-angle": `${node.mobileAngle * -1}deg`,
         "--node-delay": node.delay
       }}
     >
@@ -81,7 +83,8 @@ export function PortfolioOrbitVisual({ works = [] }) {
         return {
           ...slot,
           image: work.coverImage,
-          slug: work.slug || `work-${index}`
+          slug: work.slug || `work-${index}`,
+          slotIndex: index
         };
       })
     : [];
@@ -106,7 +109,12 @@ export function PortfolioOrbitVisual({ works = [] }) {
               style={{ "--orbit-duration": orbit.duration }}
             >
               {nodes.map((node) => (
-                <OrbitNode key={`${node.orbit}-${node.angle}-${node.slug}`} node={node} />
+                <div
+                  key={`${node.orbit}-${node.angle}-${node.slug}`}
+                  className={`portfolio-orbit-slot portfolio-orbit-slot--${node.slotIndex}`}
+                >
+                  <OrbitNode node={node} />
+                </div>
               ))}
             </div>
           );
