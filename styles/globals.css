@@ -512,7 +512,7 @@ body:has(.portfolio-hero) #jason-ai-assistant {
   width: 1px;
   height: 50%;
   transform-origin: 50% 0;
-  transform: rotate(var(--node-angle));
+  transform: rotate(var(--active-node-angle, var(--node-angle)));
 }
 
 .portfolio-orbit-node-keeper {
@@ -521,7 +521,7 @@ body:has(.portfolio-hero) #jason-ai-assistant {
   left: 50%;
   display: grid;
   place-items: center;
-  transform: translate(-50%, 50%) rotate(var(--node-counter-angle));
+  transform: translate(-50%, 50%) rotate(var(--active-node-counter-angle, var(--node-counter-angle)));
   will-change: transform;
 }
 
@@ -666,19 +666,19 @@ body:has(.portfolio-hero) #jason-ai-assistant {
 
 @keyframes portfolio-orbit-keep-normal {
   from {
-    transform: translate(-50%, 50%) rotate(var(--node-counter-angle));
+    transform: translate(-50%, 50%) rotate(var(--active-node-counter-angle, var(--node-counter-angle)));
   }
   to {
-    transform: translate(-50%, 50%) rotate(calc(var(--node-counter-angle) - 360deg));
+    transform: translate(-50%, 50%) rotate(calc(var(--active-node-counter-angle, var(--node-counter-angle)) - 360deg));
   }
 }
 
 @keyframes portfolio-orbit-keep-reverse {
   from {
-    transform: translate(-50%, 50%) rotate(var(--node-counter-angle));
+    transform: translate(-50%, 50%) rotate(var(--active-node-counter-angle, var(--node-counter-angle)));
   }
   to {
-    transform: translate(-50%, 50%) rotate(calc(var(--node-counter-angle) + 360deg));
+    transform: translate(-50%, 50%) rotate(calc(var(--active-node-counter-angle, var(--node-counter-angle)) + 360deg));
   }
 }
 
@@ -706,32 +706,81 @@ body:has(.portfolio-hero) #jason-ai-assistant {
 }
 
 @media (max-width: 767px) {
+  .portfolio-orbit-visual {
+    min-height: min(96vw, 390px);
+  }
+
   .portfolio-orbit-field {
-    width: min(112vw, 590px);
+    width: min(92vw, 390px);
+  }
+
+  .portfolio-orbit-aura {
+    inset: 18%;
+    opacity: 0.72;
+  }
+
+  .portfolio-orbit--1 {
+    --orbit-size: 42%;
+  }
+
+  .portfolio-orbit--2 {
+    --orbit-size: 66%;
+  }
+
+  .portfolio-orbit--3 {
+    --orbit-size: 88%;
   }
 
   .portfolio-orbit--4 {
-    --orbit-size: 96%;
+    display: none;
+  }
+
+  .portfolio-orbit-node {
+    --active-node-angle: var(--node-mobile-angle);
+    --active-node-counter-angle: var(--node-mobile-counter-angle);
+  }
+
+  .portfolio-orbit-slot--6,
+  .portfolio-orbit-slot--7,
+  .portfolio-orbit-slot--8,
+  .portfolio-orbit-slot--9 {
+    display: none;
+  }
+
+  .portfolio-orbit-thumbnail {
+    border-width: 2px;
+    box-shadow:
+      0 10px 24px rgb(63 47 118 / 0.16),
+      0 2px 6px rgb(63 47 118 / 0.1);
   }
 
   .portfolio-orbit-thumbnail--md {
-    width: 48px;
+    width: 42px;
   }
 
   .portfolio-orbit-thumbnail--lg {
-    width: 58px;
+    width: 50px;
   }
 
   .portfolio-orbit-thumbnail--xl {
-    width: 68px;
+    width: 58px;
   }
 
   .portfolio-orbit-thumbnail--soft {
-    border-radius: 17px;
+    border-radius: 14px;
+  }
+
+  .portfolio-orbit-center::before {
+    inset: -38px -44px;
   }
 
   .portfolio-orbit-center-number {
-    font-size: 3.5rem;
+    font-size: 3.15rem;
+  }
+
+  .portfolio-orbit-center-label {
+    margin-top: 10px;
+    font-size: 10px;
   }
 }
 
