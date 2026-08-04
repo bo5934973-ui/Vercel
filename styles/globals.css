@@ -408,10 +408,7 @@ button {
 }
 
 body:has(.portfolio-admin-page) #jason-ai-assistant,
-body:has(.hero-preview-page) #jason-ai-assistant,
-body:has(.work-page) #jason-ai-assistant,
-body:has(.apple-hero) #jason-ai-assistant,
-body:has(.portfolio-hero) #jason-ai-assistant {
+body:has(.hero-preview-page) #jason-ai-assistant {
   display: none !important;
 }
 
