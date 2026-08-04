@@ -2,14 +2,14 @@
   const functionPaths = Array.from(
     new Set([
       window.location.protocol === "file:"
-        ? "http://127.0.0.1:3000/api/chat"
-        : "/api/chat",
-      `${window.location.origin}/api/chat`,
-      "http://127.0.0.1:3000/api/chat"
+        ? "http://127.0.0.1:3000/api/chat/"
+        : "/api/chat/",
+      `${window.location.origin}/api/chat/`,
+      "http://127.0.0.1:3000/api/chat/"
     ])
   );
   const fallback = "目前网站资料中没有相关信息，可以通过联系方式进一步咨询 Jason。";
-  const starters = ["你擅长什么", "一句话总结你自己", "看看我的想法"];
+  const starters = ["我在做智能硬件，推荐案例", "帮我梳理产品发布视觉方向", "Jason 擅长什么？"];
   const state = {
     open: false,
     loading: false,
@@ -17,7 +17,7 @@
       {
         role: "assistant",
         content:
-          "嗨，我是 Jason的助手。你可以问我 Jason 的设计服务，也可以直接丢一个想法、图片方向或灵感问题过来，我会尽量像个真实的设计搭子一样陪你聊。"
+          "嗨，我是 Jason 的设计顾问。告诉我你的行业、产品阶段或设计难题，我会匹配相关案例，并给你可执行的下一步建议。"
       }
     ]
   };
@@ -183,9 +183,17 @@
     renderMessages(messages);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
+  function mount() {
     init();
+    window.setTimeout(init, 120);
+    window.setTimeout(init, 500);
   }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount, { once: true });
+  } else {
+    mount();
+  }
+
+  window.addEventListener("load", init, { once: true });
 })();
