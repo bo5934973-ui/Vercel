@@ -36,9 +36,12 @@ Install Command: npm install
 
 ```text
 ADMIN_PASSWORD=你的后台密码
+ADMIN_SESSION_SECRET=用于签名后台登录会话的长随机字符串
 ```
 
 然后重新部署一次。
+
+`ADMIN_SESSION_SECRET` 建议使用独立的长随机字符串；未设置时会临时使用 `ADMIN_PASSWORD` 签名会话。后台登录一次后，12 小时内发布和上传无需再次输入密码。
 
 ## 5. 迁移当前后台内容
 
