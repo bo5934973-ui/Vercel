@@ -25,6 +25,7 @@ const STORAGE_KEY = "jason-portfolio-admin-draft";
 const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
 const CONTENT_API_URL = process.env.NEXT_PUBLIC_CONTENT_API_URL || "/api/content";
 const MEDIA_API_URL = "/api/media";
+const ADMIN_SESSION_API_URL = "/api/admin/session";
 
 const EDITOR_SECTIONS = [
   { id: "hero", label: "首页首屏", hint: "标题、简介与按钮" },
@@ -312,7 +313,9 @@ export default function AdminPage() {
   const [savedContentJson, setSavedContentJson] = useState(() =>
     JSON.stringify(normalizeSiteContent(siteContent))
   );
-  const [password, setPassword] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [notice, setNotice] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -334,6 +337,26 @@ export default function AdminPage() {
   }, [notice]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    async function checkSession() {
+      try {
+        const response = await fetch(ADMIN_SESSION_API_URL, { cache: "no-store" });
+        const data = await response.json();
+        if (isMounted) setIsAuthenticated(Boolean(response.ok && data.authenticated));
+      } catch {
+        if (isMounted) setIsAuthenticated(false);
+      }
+    }
+
+    checkSession();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) return undefined;
     let isMounted = true;
 
     async function loadOnlineContent() {
@@ -369,7 +392,7 @@ export default function AdminPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const sendPreviewContent = () => {
@@ -412,12 +435,36 @@ export default function AdminPage() {
     showNotice("已保存到本机浏览器草稿。");
   };
 
-  const uploadImage = async (file, onUploaded, label) => {
-    if (!password.trim()) {
-      showNotice("上传图片前，请先在右侧输入后台密码。", "error");
-      return;
-    }
+  const login = async (event) => {
+    event.preventDefault();
+    if (!loginPassword) return;
 
+    setIsLoggingIn(true);
+    try {
+      const response = await fetch(ADMIN_SESSION_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: loginPassword })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.authenticated) {
+        throw new Error(data.error || "登录失败，请重试。");
+      }
+      setLoginPassword("");
+      setIsAuthenticated(true);
+    } catch (error) {
+      showNotice(error.message || "登录失败，请重试。", "error");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const logout = async () => {
+    await fetch(ADMIN_SESSION_API_URL, { method: "DELETE" });
+    setIsAuthenticated(false);
+  };
+
+  const uploadImage = async (file, onUploaded, label) => {
     if (!file.type.startsWith("image/") || file.size > 12 * 1024 * 1024) {
       showNotice("图片必须是支持的格式，且不能超过 12MB。", "error");
       return;
@@ -438,7 +485,6 @@ export default function AdminPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          password,
           filename: file.name,
           contentType: file.type,
           data: dataUrl
@@ -447,6 +493,7 @@ export default function AdminPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) setIsAuthenticated(false);
         throw new Error(data.error || "图片上传失败。");
       }
 
@@ -460,11 +507,6 @@ export default function AdminPage() {
   };
 
   const uploadResumePdf = async (file) => {
-    if (!password.trim()) {
-      showNotice("上传 PDF 前，请先在右侧输入后台密码。", "error");
-      return;
-    }
-
     if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
       showNotice("请上传 PDF 格式的简历文件。", "error");
       return;
@@ -490,7 +532,6 @@ export default function AdminPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          password,
           filename: file.name,
           contentType: "application/pdf",
           data: dataUrl
@@ -499,6 +540,7 @@ export default function AdminPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) setIsAuthenticated(false);
         throw new Error(data.error || "简历 PDF 上传失败。");
       }
 
@@ -516,11 +558,6 @@ export default function AdminPage() {
   };
 
   const saveOnline = async () => {
-    if (!password.trim()) {
-      showNotice("请先输入后台密码。", "error");
-      return;
-    }
-
     setIsSaving(true);
     showNotice("正在保存到线上...", "loading");
 
@@ -528,11 +565,12 @@ export default function AdminPage() {
       const response = await fetch(CONTENT_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, content })
+        body: JSON.stringify({ content })
       });
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) setIsAuthenticated(false);
         throw new Error(data.error || "保存失败。");
       }
 
@@ -715,6 +753,42 @@ export default function AdminPage() {
     showNotice("已移除这张详情图。");
   };
 
+  if (isAuthenticated !== true) {
+    return (
+      <main className="portfolio-admin-page admin-shell flex min-h-[100dvh] items-center justify-center px-4 py-8 text-[#1d1d1f]">
+        <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
+        <form
+          onSubmit={login}
+          className="admin-surface-card w-full max-w-md rounded-[28px] border p-6 shadow-[0_24px_80px_rgba(0,0,0,0.12)] sm:p-8"
+        >
+          <p className="text-xs font-semibold tracking-[0.14em] text-[#0071e3]">JASON QIU · CONTENT STUDIO</p>
+          <h1 className="mt-3 text-2xl font-semibold tracking-[-0.03em]">后台登录</h1>
+          <p className="mt-2 text-sm leading-6 text-zinc-500">
+            输入后台密码后即可编辑、上传和发布内容；本次会话中无需重复输入。
+          </p>
+          <div className="mt-6">
+            <Field
+              label="后台密码"
+              value={loginPassword}
+              onChange={setLoginPassword}
+              placeholder="输入 ADMIN_PASSWORD"
+              type="password"
+              autoComplete="current-password"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isAuthenticated === null || isLoggingIn || !loginPassword}
+            className="admin-primary-button mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            {isLoggingIn && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isLoggingIn ? "正在验证..." : isAuthenticated === null ? "正在检查登录状态..." : "进入后台"}
+          </button>
+        </form>
+      </main>
+    );
+  }
+
   return (
     <main className="portfolio-admin-page admin-shell min-h-[100dvh] px-3 pb-24 pt-3 text-[#1d1d1f] sm:px-4 sm:pt-4 xl:h-[100dvh] xl:overflow-hidden xl:pb-4">
       <NoticeDialog notice={notice} onClose={() => setNotice(null)} />
@@ -729,7 +803,7 @@ export default function AdminPage() {
               网站内容后台
             </h1>
             <p className="mt-1 hidden max-w-2xl text-xs leading-5 text-zinc-500 lg:block">
-              可直接修改文字。更换图片时先输入右侧后台密码，再在作品卡片里点击“更换图片”。
+              可直接修改文字、上传图片并发布内容；登录后无需重复输入密码。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -747,6 +821,9 @@ export default function AdminPage() {
             <button onClick={downloadJson} className="admin-secondary-button hidden items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition active:scale-[0.98] sm:inline-flex">
               <Download className="h-4 w-4" />
               导出 JSON
+            </button>
+            <button onClick={logout} className="admin-secondary-button rounded-xl border px-3 py-2 text-sm font-medium transition active:scale-[0.98]">
+              退出登录
             </button>
           </div>
         </div>
@@ -1133,14 +1210,7 @@ export default function AdminPage() {
                 <Settings2 className="h-4 w-4 text-zinc-500" />
                 <h2 className="text-base font-semibold">发布更改</h2>
               </div>
-              <Field
-                label="后台密码"
-                value={password}
-                onChange={setPassword}
-                placeholder="输入 ADMIN_PASSWORD"
-                type="password"
-                autoComplete="current-password"
-              />
+              <p className="mt-1 text-xs leading-5 text-zinc-500">当前已登录，发布和上传无需再次输入密码。</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                 <button
                   onClick={saveOnline}
