@@ -1,6 +1,7 @@
 import { list, put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { siteContent } from "@/data/contentFallback";
+import { hasAdminSession } from "@/app/lib/adminSession";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,9 +77,8 @@ export async function GET() {
 }
 
 export async function POST(request) {
-  const expectedPassword = process.env.ADMIN_PASSWORD;
-  if (!expectedPassword) {
-    return json({ error: "Server is missing ADMIN_PASSWORD." }, { status: 500 });
+  if (!hasAdminSession(request)) {
+    return json({ error: "登录已过期，请重新登录。" }, { status: 401 });
   }
 
   let body;
@@ -86,10 +86,6 @@ export async function POST(request) {
     body = await request.json();
   } catch {
     return json({ error: "Invalid JSON body." }, { status: 400 });
-  }
-
-  if (body.password !== expectedPassword) {
-    return json({ error: "后台密码不正确。" }, { status: 401 });
   }
 
   if (!validateContent(body.content)) {
