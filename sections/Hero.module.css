@@ -1,0 +1,196 @@
+.heroVideo {
+  filter: contrast(1.045) saturate(1.03);
+}
+
+/* Web approximation of a premium frosted-glass material. */
+.liquidDock {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.68);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.25) 54%, rgb(242 247 255 / 0.36)),
+    rgb(255 255 255 / 0.28);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    inset 0 -1px 0 rgb(149 164 184 / 0.12),
+    0 18px 48px rgb(20 42 74 / 0.13),
+    0 3px 12px rgb(20 42 74 / 0.06);
+  -webkit-backdrop-filter: blur(28px) saturate(185%) contrast(1.04);
+  backdrop-filter: blur(28px) saturate(185%) contrast(1.04);
+}
+
+.liquidDock::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 18% -30%, rgb(255 255 255 / 0.92), transparent 42%),
+    linear-gradient(90deg, rgb(255 255 255 / 0.34), transparent 38%, rgb(214 229 248 / 0.18));
+  content: "";
+  pointer-events: none;
+}
+
+.liquidDock::after {
+  position: absolute;
+  inset: 1px;
+  z-index: 1;
+  border: 1px solid rgb(255 255 255 / 0.28);
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.liquidDock > * {
+  position: relative;
+  z-index: 2;
+}
+
+.dockHome,
+.dockCta,
+.dockLink {
+  position: relative;
+  border-radius: 999px;
+  outline: none;
+}
+
+.dockActive {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: 1px solid rgb(255 255 255 / 0.76);
+  border-radius: 999px;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.86), rgb(255 255 255 / 0.5)),
+    rgb(255 255 255 / 0.48);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.98),
+    inset 0 -1px 0 rgb(128 145 168 / 0.1),
+    0 5px 16px rgb(23 44 72 / 0.1);
+  -webkit-backdrop-filter: blur(14px) saturate(165%);
+  backdrop-filter: blur(14px) saturate(165%);
+}
+
+.dockLink,
+.dockCta {
+  transition:
+    color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.dockHome:hover,
+.dockHome:focus-visible,
+.dockLink:hover,
+.dockLink:focus-visible,
+.dockCta:hover,
+.dockCta:focus-visible {
+  background: rgb(255 255 255 / 0.34);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.56);
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .liquidDock {
+    background: rgb(248 250 253 / 0.96);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquidDock,
+  .dockActive {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .liquidDock {
+    background: rgb(248 250 253 / 0.97);
+  }
+}
+
+.videoScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.24) 0%, rgb(255 255 255 / 0.1) 38%, transparent 62%),
+    linear-gradient(0deg, rgb(226 235 246 / 0.06), transparent 34%);
+}
+
+.marqueeViewport {
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent);
+}
+
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  animation: project-marquee 38s linear infinite;
+  will-change: transform;
+}
+
+.marqueeViewport:hover .marqueeTrack,
+.marqueeViewport:focus-within .marqueeTrack {
+  animation-play-state: paused;
+}
+
+.projectSet {
+  display: flex;
+  flex-shrink: 0;
+  gap: 14px;
+  padding-right: 14px;
+}
+
+.tileWash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgb(219 235 255 / 0.78), rgb(246 250 255 / 0.94));
+  opacity: 0;
+  transform: scale(1.12);
+  transition:
+    opacity 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:global(.group:hover) .tileWash {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes project-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .videoScrim {
+    background:
+      linear-gradient(90deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.1) 84%),
+      linear-gradient(0deg, rgb(226 235 246 / 0.08), transparent 42%);
+  }
+
+  .marqueeViewport {
+    mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marqueeViewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .marqueeTrack {
+    animation: none;
+  }
+}
