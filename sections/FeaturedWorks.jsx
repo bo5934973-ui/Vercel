@@ -6,22 +6,16 @@ import { useLiveContent } from "@/components/LiveContentProvider";
 export function FeaturedWorks() {
   const { content } = useLiveContent();
   const { worksSection, works } = content;
-  const workGridClass =
-    works.length === 1
-      ? "mx-auto max-w-[467px] grid-cols-1"
-      : works.length === 2 || works.length === 4
-        ? "mx-auto max-w-[955px] grid-cols-1 md:grid-cols-2"
-        : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
   return (
-    <section id="works" className="overflow-hidden border-t border-black/[0.07] bg-white px-5 py-20 text-[#1d1d1f] md:px-10 md:py-28">
+    <section id="works" className="scroll-mt-24 overflow-hidden bg-white px-5 py-20 text-[#1d1d1f] md:px-10 md:py-28">
       <div className="mx-auto max-w-[1440px]">
-        <div className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
-          <h2 className="text-4xl font-semibold leading-[1.1] tracking-normal text-[#1d1d1f] md:text-5xl lg:text-6xl">
+        <div className="mb-12 max-w-[920px] md:mb-16">
+          <h2 className="text-[clamp(2.6rem,4.5vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-[#1d1d1f]">
             {worksSection.title}
           </h2>
         </div>
-        <div className={`grid gap-5 ${workGridClass}`}>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 md:gap-y-14 xl:grid-cols-3">
           {works.map((work, index) => (
             <WorkCard key={work.slug} work={work} index={index} />
           ))}
