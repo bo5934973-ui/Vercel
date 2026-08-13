@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll
+  useReducedMotion
 } from "framer-motion";
 import { ArrowDownRight, ChevronRight } from "lucide-react";
 import { useLiveContent } from "@/components/LiveContentProvider";
@@ -73,114 +71,69 @@ function ProjectMarquee({ works }) {
   );
 }
 
-function ActiveDockGlass() {
-  return (
-    <motion.span
-      layoutId="hero-dock-active"
-      className={styles.dockActive}
-      transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.72 }}
-      aria-hidden="true"
-    />
-  );
-}
-
-function HeroDock({ siteName, activeHref }) {
+function HeroDock({ siteName }) {
   return (
     <nav
       aria-label="首页导航"
-      className={`${styles.liquidDock} flex items-center p-1.5`}
+      className="flex items-center rounded-full border border-slate-200/40 bg-white/90 p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.09)] backdrop-blur-2xl"
     >
       <Link
         href="#top"
         aria-label={`${siteName} 首页`}
-        aria-current={activeHref === "#top" ? "page" : undefined}
-        className={`${styles.dockHome} grid h-9 w-9 shrink-0 place-items-center text-base text-[#0a1b33] transition-transform active:scale-95`}
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-slate-100 bg-white text-base text-[#0a1b33] shadow-sm transition-transform active:scale-95"
       >
-        {activeHref === "#top" && <ActiveDockGlass />}
-        <span className="relative z-10">✦</span>
+        ✦
       </Link>
       {DOCK_ITEMS.map((item) => (
         <Link
           key={item.href}
           href={item.href}
-          aria-current={activeHref === item.href ? "page" : undefined}
-          className={`${styles.dockLink} whitespace-nowrap px-3 py-2 text-[12px] font-semibold text-slate-600 transition-colors hover:text-[#0a1b33] focus-visible:text-[#0a1b33] sm:px-4`}
+          className="whitespace-nowrap px-3 py-2 text-[12px] font-semibold text-slate-500 transition-colors hover:text-[#0a1b33] focus-visible:text-[#0a1b33] sm:px-4"
         >
-          {activeHref === item.href && <ActiveDockGlass />}
-          <span className="relative z-10">{item.label}</span>
+          {item.label}
         </Link>
       ))}
       <Link
         href="#works"
-        aria-current={activeHref === "#works" ? "page" : undefined}
-        className={`${styles.dockCta} inline-flex items-center gap-1 whitespace-nowrap px-4 py-2 text-[12px] font-semibold text-[#0a1b33] transition-all active:scale-[0.98] sm:px-5`}
+        className="inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-slate-200/60 bg-white px-4 py-2 text-[12px] font-semibold text-[#0a1b33] shadow-sm transition-all hover:border-slate-300 active:scale-[0.98] sm:px-5"
       >
-        {activeHref === "#works" && <ActiveDockGlass />}
-        <span className="relative z-10">查看作品</span>
-        <ChevronRight className="relative z-10 h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+        查看作品
+        <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
       </Link>
     </nav>
   );
 }
 
 export function Hero() {
-  const sectionRef = useRef(null);
   const reducedMotion = useReducedMotion();
-  const [dockAtTop, setDockAtTop] = useState(false);
-  const [activeHref, setActiveHref] = useState("#top");
+  const [videoReady, setVideoReady] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const { content } = useLiveContent();
   const { hero, site, works } = content;
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"]
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
-    setDockAtTop((current) => {
-      if (!current && progress > 0.72) return true;
-      if (current && progress < 0.58) return false;
-      return current;
-    });
-  });
-
-  useEffect(() => {
-    const sectionIds = ["top", "works", "about", "contact", "resume"];
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const current = entries.find((entry) => entry.isIntersecting);
-        if (current?.target?.id) setActiveHref(`#${current.target.id}`);
-      },
-      {
-        rootMargin: "-32% 0px -58% 0px",
-        threshold: 0
-      }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <section
-      ref={sectionRef}
       id="top"
       className="portfolio-video-home overflow-hidden bg-[#f9fafb] px-3 pb-8 pt-3 text-[#0a1b33] md:px-6 md:pb-10 md:pt-5"
     >
       <div className="w-full">
         <div className="relative flex h-[calc(100dvh-32px)] min-h-[640px] max-h-[760px] flex-col overflow-hidden rounded-[36px] border border-slate-200/50 bg-white shadow-[0_40px_100px_-20px_rgba(14,33,59,0.08)] md:rounded-[48px]">
           <div className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
+            <div className={styles.heroFallback} aria-hidden="true">
+              <img src="/hero-cube-system.png" alt="" />
+            </div>
             <video
-              className={`${styles.heroVideo} h-full w-full object-cover`}
+              className={`${styles.heroVideo} ${videoReady && !videoFailed ? styles.videoVisible : styles.videoHidden} h-full w-full object-cover`}
               src={VIDEO_URL}
-              poster="/works/dalingring-smart-ring.png"
+              poster="/hero-cube-system.png"
               autoPlay={!reducedMotion}
               loop
               muted
               playsInline
+              preload="metadata"
+              onLoadedData={() => setVideoReady(true)}
+              onCanPlay={() => setVideoReady(true)}
+              onError={() => setVideoFailed(true)}
               aria-hidden="true"
             />
           </div>
@@ -233,28 +186,6 @@ export function Hero() {
         <ProjectMarquee works={works} />
       </div>
 
-      <motion.div
-        layout
-        initial={reducedMotion ? false : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0, scale: dockAtTop ? 0.92 : 1 }}
-        transition={
-          reducedMotion
-            ? { duration: 0 }
-            : {
-                opacity: { duration: 0.45, delay: 0.2 },
-                y: { duration: 0.45, delay: 0.2 },
-                scale: { type: "spring", stiffness: 330, damping: 30 },
-                layout: { type: "spring", stiffness: 300, damping: 32, mass: 0.72 }
-              }
-        }
-        className={`pointer-events-none fixed inset-x-0 z-50 flex justify-center ${
-          dockAtTop ? "top-4 md:top-5" : "bottom-8 md:bottom-10"
-        }`}
-      >
-        <div className="pointer-events-auto">
-          <HeroDock siteName={site.name} activeHref={activeHref} />
-        </div>
-      </motion.div>
     </section>
   );
 }
