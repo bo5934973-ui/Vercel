@@ -12,6 +12,8 @@
   const starters = ["我在做智能硬件，推荐案例", "帮我梳理产品发布视觉方向", "Jason 擅长什么？"];
   const state = {
     open: false,
+    hidden: false,
+    fullscreen: false,
     loading: false,
     messages: [
       {
@@ -112,9 +114,13 @@
 
     const panel = createElement("div", "jason-ai-panel jason-ai-glass");
     panel.innerHTML = [
-      '<div class="jason-ai-head">',
-      '<div><p class="jason-ai-title">Jason的助手</p><p class="jason-ai-subtitle">设计、品牌与作品集咨询</p></div>',
-      '<button class="jason-ai-close" type="button" aria-label="关闭 Jason的助手">×</button>',
+      '<div class="jason-ai-head" data-drag-handle>',
+      '<div><p class="jason-ai-title">Jason 的助手</p><p class="jason-ai-subtitle">设计、品牌与作品集咨询</p></div>',
+      '<div class="jason-ai-actions">',
+      '<button class="jason-ai-fullscreen" type="button" aria-label="全屏打开助手" title="全屏">⛶</button>',
+      '<button class="jason-ai-hide" type="button" aria-label="隐藏助手" title="隐藏助手">−</button>',
+      '<button class="jason-ai-close" type="button" aria-label="关闭助手" title="关闭">×</button>',
+      "</div>",
       "</div>",
       '<div class="jason-ai-messages"></div>',
       '<div class="jason-ai-composer">',
@@ -140,13 +146,142 @@
       '</span><span class="jason-ai-label">Jason的助手</span>'
     ].join("");
 
+    const reveal = createElement("button", "jason-ai-reveal");
+    reveal.type = "button";
+    reveal.setAttribute("aria-label", "显示 Jason 的助手");
+    reveal.textContent = "AI";
+
     root.appendChild(panel);
     root.appendChild(launcher);
+    root.appendChild(reveal);
     document.body.appendChild(root);
+
+    const homeHero = document.querySelector(".portfolio-video-home");
+    if (homeHero && "IntersectionObserver" in window) {
+      const syncHeroVisibility = (visible) => {
+        root.classList.toggle("is-hero-visible", visible);
+      };
+      const heroRect = homeHero.getBoundingClientRect();
+      syncHeroVisibility(heroRect.bottom > 0 && heroRect.top < window.innerHeight);
+
+      const heroObserver = new IntersectionObserver(
+        ([entry]) => syncHeroVisibility(entry.isIntersecting),
+        { threshold: 0.08 }
+      );
+      heroObserver.observe(homeHero);
+    }
 
     const messages = root.querySelector(".jason-ai-messages");
     const input = root.querySelector(".jason-ai-input");
     const prompts = root.querySelector(".jason-ai-prompts");
+    const fullscreenButton = root.querySelector(".jason-ai-fullscreen");
+    const dragHandle = panel.querySelector("[data-drag-handle]");
+    let suppressLauncherClick = false;
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), Math.max(min, max));
+    }
+
+    function getDragBounds() {
+      const launcherRect = launcher.getBoundingClientRect();
+      const panelRect = panel.getBoundingClientRect();
+      const gap = window.matchMedia("(max-width: 640px)").matches ? 62 : 68;
+      const panelWidth = state.open ? panelRect.width : 0;
+      const panelHeight = state.open ? panelRect.height : 0;
+
+      return {
+        minLeft: state.open ? panelWidth - launcherRect.width + 12 : 12,
+        maxLeft: window.innerWidth - launcherRect.width - 12,
+        minTop: state.open ? panelHeight + gap + 12 : 12,
+        maxTop: window.innerHeight - launcherRect.height - 12
+      };
+    }
+
+    function placeAssistant(left, top) {
+      const bounds = getDragBounds();
+      root.style.left = `${clamp(left, bounds.minLeft, bounds.maxLeft)}px`;
+      root.style.top = `${clamp(top, bounds.minTop, bounds.maxTop)}px`;
+      root.style.right = "auto";
+      root.style.bottom = "auto";
+    }
+
+    function keepAssistantInView() {
+      const launcherRect = launcher.getBoundingClientRect();
+      placeAssistant(launcherRect.left, launcherRect.top);
+    }
+
+    function enableDrag(handle, preventClick) {
+      handle.addEventListener("pointerdown", (event) => {
+        if (
+          (event.pointerType === "mouse" && event.button !== 0) ||
+          (handle !== launcher && event.target.closest("button")) ||
+          state.fullscreen
+        ) return;
+
+        const launcherRect = launcher.getBoundingClientRect();
+        const startX = event.clientX;
+        const startY = event.clientY;
+        const startLeft = launcherRect.left;
+        const startTop = launcherRect.top;
+        let moved = false;
+
+        handle.setPointerCapture?.(event.pointerId);
+
+        const move = (moveEvent) => {
+          const deltaX = moveEvent.clientX - startX;
+          const deltaY = moveEvent.clientY - startY;
+          if (!moved && Math.hypot(deltaX, deltaY) < 4) return;
+
+          moved = true;
+          root.classList.add("is-dragging");
+          panel.classList.add("is-dragging");
+          placeAssistant(startLeft + deltaX, startTop + deltaY);
+        };
+
+        const stop = () => {
+          root.classList.remove("is-dragging");
+          panel.classList.remove("is-dragging");
+          handle.removeEventListener("pointermove", move);
+          handle.removeEventListener("pointerup", stop);
+          handle.removeEventListener("pointercancel", stop);
+          if (moved && preventClick) suppressLauncherClick = true;
+        };
+
+        handle.addEventListener("pointermove", move);
+        handle.addEventListener("pointerup", stop);
+        handle.addEventListener("pointercancel", stop);
+      });
+    }
+
+    function syncPanelState() {
+      panel.classList.toggle("is-open", state.open);
+      panel.classList.toggle("is-fullscreen", state.fullscreen && state.open);
+      launcher.querySelector(".jason-ai-icon").classList.toggle("is-open", state.open);
+      fullscreenButton.setAttribute("aria-pressed", String(state.fullscreen));
+      fullscreenButton.setAttribute("aria-label", state.fullscreen ? "退出全屏" : "全屏打开助手");
+      fullscreenButton.textContent = state.fullscreen ? "⤢" : "⛶";
+    }
+
+    function openAssistant() {
+      state.hidden = false;
+      state.open = true;
+      root.classList.remove("is-hidden");
+      syncPanelState();
+      window.requestAnimationFrame(keepAssistantInView);
+      window.setTimeout(() => input.focus(), 80);
+    }
+
+    function closeAssistant() {
+      state.open = false;
+      syncPanelState();
+    }
+
+    function hideAssistant() {
+      state.hidden = true;
+      state.open = false;
+      root.classList.add("is-hidden");
+      syncPanelState();
+    }
 
     starters.forEach((prompt) => {
       const chip = createElement("button", "jason-ai-chip", prompt);
@@ -156,16 +291,31 @@
     });
 
     launcher.addEventListener("click", () => {
-      state.open = !state.open;
-      panel.classList.toggle("is-open", state.open);
-      launcher.querySelector(".jason-ai-icon").classList.toggle("is-open", state.open);
-      if (state.open) window.setTimeout(() => input.focus(), 80);
+      if (suppressLauncherClick) {
+        suppressLauncherClick = false;
+        return;
+      }
+      if (state.open) closeAssistant();
+      else openAssistant();
     });
 
-    root.querySelector(".jason-ai-close").addEventListener("click", () => {
-      state.open = false;
-      panel.classList.remove("is-open");
-      launcher.querySelector(".jason-ai-icon").classList.remove("is-open");
+    root.querySelector(".jason-ai-close").addEventListener("click", closeAssistant);
+    root.querySelector(".jason-ai-hide").addEventListener("click", hideAssistant);
+    reveal.addEventListener("click", () => {
+      state.hidden = false;
+      root.classList.remove("is-hidden");
+    });
+    fullscreenButton.addEventListener("click", () => {
+      state.fullscreen = !state.fullscreen;
+      syncPanelState();
+    });
+
+    enableDrag(launcher, true);
+    enableDrag(dragHandle, false);
+    window.addEventListener("resize", keepAssistantInView);
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && state.open) closeAssistant();
     });
 
     root.querySelector(".jason-ai-form").addEventListener("submit", (event) => {
