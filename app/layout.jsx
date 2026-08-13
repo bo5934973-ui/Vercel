@@ -33,11 +33,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="zh-CN">
       <head>
-        <link rel="stylesheet" href="/ai-assistant.css?v=next-layout-2" />
+        <link rel="stylesheet" href="/ai-assistant.css?v=next-layout-7" />
       </head>
       <body>
         <LiveContentProvider initialContent={siteContent}>{children}</LiveContentProvider>
-        <Script src="/ai-assistant.js?v=next-layout-2" strategy="afterInteractive" />
+        <Script src="/ai-assistant.js?v=next-layout-9" strategy="afterInteractive" />
       </body>
     </html>
   );
