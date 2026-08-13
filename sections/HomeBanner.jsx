@@ -36,7 +36,8 @@ export function HomeBanner() {
             onError={() => setVideoFailed(true)}
             aria-hidden="true"
           />
-        </div>
+          <div className={styles.mobileVisual} aria-hidden="true" />
+0        </div>
         <div className={styles.scrim} aria-hidden="true" />
 
         <div className="relative z-10 flex flex-1 flex-col items-start px-8 pt-12 md:px-16 md:pt-16 lg:px-20 lg:pt-20">
