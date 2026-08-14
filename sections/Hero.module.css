@@ -194,3 +194,62 @@
     animation: none;
   }
 }
+.heroFallback {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 75% 65%, rgb(39 113 255 / 0.34), transparent 32%),
+    linear-gradient(145deg, #fbfcff 0%, #edf2fa 52%, #dce7f7 100%);
+}
+
+.heroFallback img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.videoHidden {
+  opacity: 0;
+}
+
+.videoVisible {
+  opacity: 1;
+}
+
+.mobileVisual {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .heroVideo {
+    display: none;
+  }
+
+  .heroFallback img {
+    object-position: 68% center;
+    opacity: 0.74;
+    transform: scale(1.12);
+  }
+
+  .mobileVisual {
+    display: block;
+    position: absolute;
+    right: -18vw;
+    bottom: 8%;
+    z-index: 2;
+    width: min(78vw, 330px);
+    aspect-ratio: 1;
+    border: 2px solid rgb(181 214 255 / 0.92);
+    border-radius: 27%;
+    background:
+      radial-gradient(ellipse at 56% 12%, rgb(255 255 255 / 0.94) 0 9%, transparent 10%),
+      linear-gradient(145deg, #123c9d 0%, #0a59df 56%, #063a9c 100%);
+    box-shadow:
+      -20px 26px 54px rgb(14 70 176 / 0.28),
+      inset 10px 10px 22px rgb(255 255 255 / 0.2),
+      inset -14px -18px 26px rgb(1 24 86 / 0.26);
+    transform: rotate(-17deg);
+  }
+}
