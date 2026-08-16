@@ -9,7 +9,7 @@ export function FeaturedWorks() {
 
   return (
     <section id="works" className="scroll-mt-24 overflow-hidden bg-white px-5 py-20 text-[#1d1d1f] md:px-10 md:py-28">
-      <div className="mx-auto max-w-[1440px]">
+      <div className="mx-auto max-w-[1720px]">
         <div className="mb-12 max-w-[920px] md:mb-16">
           <h2 className="text-[clamp(2.6rem,4.5vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-[#1d1d1f]">
             {worksSection.title}
