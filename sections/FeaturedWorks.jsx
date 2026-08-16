@@ -15,7 +15,7 @@ export function FeaturedWorks() {
             {worksSection.title}
           </h2>
         </div>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 md:gap-y-14 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 md:gap-y-14 xl:grid-cols-2">
           {works.map((work, index) => (
             <WorkCard key={work.slug} work={work} index={index} />
           ))}
