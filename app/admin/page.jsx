@@ -26,6 +26,14 @@ const LIVE_CONTENT_CACHE_KEY = "jason-portfolio-live-content-v6";
 const CONTENT_API_URL = process.env.NEXT_PUBLIC_CONTENT_API_URL || "/api/content";
 const MEDIA_API_URL = "/api/media";
 const ADMIN_SESSION_API_URL = "/api/admin/session";
+const ADMIN_SESSION_STORAGE_KEY = "portfolio_admin_session";
+
+function adminFetch(url, options = {}) {
+  const headers = new Headers(options.headers);
+  const session = window.sessionStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+  if (session) headers.set("X-Admin-Session", session);
+  return fetch(url, { ...options, headers });
+}
 
 const EDITOR_SECTIONS = [
   { id: "hero", label: "首页首屏", hint: "标题、简介与按钮" },
@@ -341,7 +349,7 @@ export default function AdminPage() {
 
     async function checkSession() {
       try {
-        const response = await fetch(ADMIN_SESSION_API_URL, { cache: "no-store" });
+        const response = await adminFetch(ADMIN_SESSION_API_URL, { cache: "no-store" });
         const data = await response.json();
         if (isMounted) setIsAuthenticated(Boolean(response.ok && data.authenticated));
       } catch {
@@ -451,6 +459,7 @@ export default function AdminPage() {
         throw new Error(data.error || "登录失败，请重试。");
       }
       setLoginPassword("");
+      window.sessionStorage.setItem(ADMIN_SESSION_STORAGE_KEY, data.session);
       setIsAuthenticated(true);
     } catch (error) {
       showNotice(error.message || "登录失败，请重试。", "error");
@@ -460,7 +469,8 @@ export default function AdminPage() {
   };
 
   const logout = async () => {
-    await fetch(ADMIN_SESSION_API_URL, { method: "DELETE" });
+    await adminFetch(ADMIN_SESSION_API_URL, { method: "DELETE" });
+    window.sessionStorage.removeItem(ADMIN_SESSION_STORAGE_KEY);
     setIsAuthenticated(false);
   };
 
@@ -481,7 +491,7 @@ export default function AdminPage() {
         reader.readAsDataURL(file);
       });
 
-      const response = await fetch(MEDIA_API_URL, {
+      const response = await adminFetch(MEDIA_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -528,7 +538,7 @@ export default function AdminPage() {
         reader.readAsDataURL(file);
       });
 
-      const response = await fetch(MEDIA_API_URL, {
+      const response = await adminFetch(MEDIA_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -562,7 +572,7 @@ export default function AdminPage() {
     showNotice("正在保存到线上...", "loading");
 
     try {
-      const response = await fetch(CONTENT_API_URL, {
+      const response = await adminFetch(CONTENT_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content })

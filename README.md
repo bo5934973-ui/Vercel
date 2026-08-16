@@ -69,7 +69,7 @@ Create and connect a Vercel Blob store, then add this environment variable:
 
 ```text
 ADMIN_PASSWORD=your-admin-password
-# Recommended: a separate long random value for signing the 12-hour admin session.
+# Recommended: a separate long random value for signing the browser session.
 ADMIN_SESSION_SECRET=your-long-random-session-secret
 ```
 

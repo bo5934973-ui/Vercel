@@ -37,8 +37,9 @@ export async function POST(request) {
     return json({ error: "后台密码不正确。" }, { status: 401 });
   }
 
-  const response = json({ authenticated: true });
-  response.cookies.set(ADMIN_SESSION_COOKIE, adminSessionCookie(createAdminSession()));
+  const session = createAdminSession();
+  const response = json({ authenticated: true, session });
+  response.cookies.set(ADMIN_SESSION_COOKIE, adminSessionCookie(session));
   return response;
 }
 
