@@ -8,14 +8,14 @@ export function FeaturedWorks() {
   const { worksSection, works } = content;
 
   return (
-    <section id="works" className="scroll-mt-24 overflow-hidden bg-white px-5 py-20 text-[#1d1d1f] md:px-10 md:py-28">
+    <section id="works" className="scroll-mt-24 overflow-hidden bg-white px-3 py-20 text-[#1d1d1f] md:px-5 md:py-28">
       <div className="mx-auto max-w-[1720px]">
-        <div className="mb-12 max-w-[920px] md:mb-16">
+        <div className="mx-auto mb-12 max-w-[1120px] px-2 text-center md:mb-16">
           <h2 className="text-[clamp(2.6rem,4.5vw,3.6rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-[#1d1d1f]">
             {worksSection.title}
           </h2>
         </div>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-12 md:grid-cols-2 md:gap-y-14 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
           {works.map((work, index) => (
             <WorkCard key={work.slug} work={work} index={index} />
           ))}
